@@ -6,25 +6,6 @@
     <title>Recherche des ressemblances</title>
     <link rel="stylesheet" href="style.css">
     <script src="data.js"></script>
-    <style>
-        .found-zone {
-            width: 100%; order: 3; margin-top: 20px; padding: 20px;
-            background-color: #f4f4f4; border: 2px dashed #999; border-radius: 8px;
-            min-height: 120px; box-sizing: border-box; display: flex; flex-wrap: wrap; gap: 15px; align-content: flex-start;
-        }
-        .found-group {
-            display: flex; gap: 5px; padding: 8px 12px; background-color: #dff0d8;
-            border: 1px solid #00AA55; border-radius: 6px; height: fit-content; align-items: center;
-        }
-        .found-group::before {
-            content: "Famille : "; font-size: 0.8em; font-weight: bold; color: #00AA55; margin-right: 8px; white-space: nowrap;
-        }
-        .element-card.locked {
-            cursor: default; background-color: #fff; border-color: #00AA55; color: #005522;
-            opacity: 1; transform: scale(0.9); margin: 0; width: 45px; height: 45px; font-size: 1.1em;
-        }
-        .test-zone { transition: border-color 0.3s; }
-    </style>
 </head>
 <body>
     <header>
