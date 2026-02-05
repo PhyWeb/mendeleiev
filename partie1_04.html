@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recherche des ressemblances</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="data.js"></script>
+    <style>
+        .found-zone {
+            width: 100%; order: 3; margin-top: 20px; padding: 20px;
+            background-color: #f4f4f4; border: 2px dashed #999; border-radius: 8px;
+            min-height: 120px; box-sizing: border-box; display: flex; flex-wrap: wrap; gap: 15px; align-content: flex-start;
+        }
+        .found-group {
+            display: flex; gap: 5px; padding: 8px 12px; background-color: #dff0d8;
+            border: 1px solid #00AA55; border-radius: 6px; height: fit-content; align-items: center;
+        }
+        .found-group::before {
+            content: "Famille : "; font-size: 0.8em; font-weight: bold; color: #00AA55; margin-right: 8px; white-space: nowrap;
+        }
+        .element-card.locked {
+            cursor: default; background-color: #fff; border-color: #00AA55; color: #005522;
+            opacity: 1; transform: scale(0.9); margin: 0; width: 45px; height: 45px; font-size: 1.1em;
+        }
+        .test-zone { transition: border-color 0.3s; }
+    </style>
+</head>
+<body>
+    <header>
+        <h2>Recherche des familles</h2>
+        <p style="text-align:center;">Étudiez les fiches pour constituer des familles dans la zone de test.<br><em>(L'Hydrogène est exclu).</em></p>
+    </header>
+
+    <div class="main-container">
+        <section class="game-area">
+            <div class="card-pool" id="pool" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+            
+            <h3 style="margin-bottom:0; color: #006699;">Zone de test (glissez ici) :</h3>
+            <div class="test-zone" id="test-box" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+            
+            <div class="controls" style="border:none; padding: 10px 0 0 0;">
+                <button class="btn" onclick="verifierFamille()">Valider ce groupe</button>
+                <button class="btn" onclick="viderZoneTest()" style="background-color: #666;">Vider la zone</button>
+                <div id="message-box"></div>
+            </div>
+        </section>
+
+        <aside class="info-panel">
+            <div class="info-header">
+                <div id="info-symbole">--</div>
+                <div id="info-nom">Survolez un élément</div>
+            </div>
+            <div class="info-item"><span class="info-label">Masse atomique (H=1)</span><span id="info-masse" class="info-value"></span></div>
+            <div class="info-item"><span class="info-label">Formule corps simple</span><span id="info-formule" class="info-value"></span></div>
+            <div class="info-item"><span class="info-label">Propriétés Physiques</span><span id="info-propPhy" class="info-value"></span></div>
+            <div class="info-item"><span class="info-label">Propriétés Chimiques</span><span id="info-propChi" class="info-value"></span></div>
+            <div class="info-item"><span class="info-label">Composés</span><span id="info-composes" class="info-value"></span></div>
+        </aside>
+
+        <div class="found-zone" id="found-zone">
+            <div style="width: 100%; margin-bottom: 5px;">
+                <h4 style="margin:0; color:#555;">Familles identifiées :</h4>
+                <span id="placeholder-found" style="color:#888; font-style:italic;">Les familles validées apparaîtront ici...</span>
+            </div>
+        </div>
+    </div>
+
+    <footer class="controls">
+        <div class="nav-links">
+            <a href="partie1_03.html" class="link-simple">&larr; Retour</a>
+            <a href="partie1_05.html" id="btn-suite" class="btn" style="display:none;">SUITE : La démarche &rarr;</a>
+        </div>
+    </footer>
+
+    <script>
+        const pool = document.getElementById('pool');
+        const testBox = document.getElementById('test-box');
+        const foundZone = document.getElementById('found-zone');
+        let familiesFoundCount = 0;
+
+        // --- MODIFICATION ICI ---
+        // On utilise ORDRE_MASSE (défini dans data.js) pour générer les cartes.
+        // Cela garantit qu'elles sont "pré-ordonnées" comme demandé.
+        ORDRE_MASSE.forEach(id => {
+            if (id === "H") return; // On ignore H pour cet exercice
+
+            const el = elementsData.find(e => e.id === id);
+            if (!el) return;
+
+            const div = document.createElement('div');
+            div.className = 'element-card';
+            div.id = el.id;
+            div.draggable = true;
+            div.textContent = el.id;
+            div.addEventListener('dragstart', (ev) => ev.dataTransfer.setData("text", ev.target.id));
+            div.addEventListener('mouseover', () => showInfo(el.id));
+            div.addEventListener('mouseout', clearInfo);
+            pool.appendChild(div);
+        });
+
+        function showInfo(id) {
+            const d = elementsData.find(e => e.id === id);
+            if (!d) return;
+            document.getElementById('info-nom').textContent = d.nom;
+            document.getElementById('info-symbole').textContent = d.id;
+            document.getElementById('info-masse').textContent = d.masse;
+            document.getElementById('info-formule').innerHTML = d.formule;
+            document.getElementById('info-propPhy').innerHTML = d.propPhy;
+            document.getElementById('info-propChi').innerHTML = d.propChi;
+            document.getElementById('info-composes').innerHTML = d.composes;
+        }
+        function clearInfo() {}
+
+        function allowDrop(ev) { ev.preventDefault(); }
+        function drop(ev) {
+            ev.preventDefault();
+            const el = document.getElementById(ev.dataTransfer.getData("text"));
+            if(!el || el.classList.contains('locked')) return;
+            if (ev.currentTarget.id === 'test-box' || ev.currentTarget.id === 'pool') {
+                ev.currentTarget.appendChild(el);
+            }
+        }
+
+        function verifierFamille() {
+            const children = Array.from(testBox.children);
+            const msg = document.getElementById('message-box');
+            
+            if (children.length < 2) {
+                msg.textContent = "Il faut au moins 2 éléments."; msg.className = "msg-error"; return;
+            }
+
+            const currentIds = children.map(c => c.id);
+            const firstEl = elementsData.find(e => e.id === currentIds[0]);
+            
+            const targetFam = FAMILLES[firstEl.famille]; 
+
+            const allCorrect = currentIds.every(id => targetFam.includes(id));
+
+            if (!allCorrect) {
+                msg.textContent = "Intrus détecté !"; msg.className = "msg-error"; testBox.style.borderColor = "#AA0055";
+            } else {
+                if (currentIds.length === targetFam.length) {
+                    msg.innerHTML = "Famille complète trouvée !"; msg.className = "msg-success"; testBox.style.borderColor = "#00AA55";
+                    archiverFamille(children);
+                    familiesFoundCount++;
+                    if(familiesFoundCount >= 1) document.getElementById('btn-suite').style.display = 'inline-block';
+                } else {
+                    msg.textContent = "Famille incomplète."; msg.className = "msg-partial"; testBox.style.borderColor = "#FF6600";
+                }
+            }
+            setTimeout(() => { testBox.style.borderColor = ""; }, 2000);
+        }
+
+        function viderZoneTest() {
+            // Remet les cartes dans le pool (à la fin, donc l'ordre peut être perdu si on vide, 
+            // mais l'initialisation est correcte).
+            Array.from(testBox.children).forEach(c => pool.appendChild(c));
+            document.getElementById('message-box').textContent = "";
+        }
+
+        function archiverFamille(elements) {
+            document.getElementById('placeholder-found').style.display = 'none';
+            const groupDiv = document.createElement('div');
+            groupDiv.className = 'found-group';
+            elements.forEach(card => {
+                card.draggable = false; card.classList.add('locked'); card.onclick = null;
+                groupDiv.appendChild(card);
+            });
+            foundZone.appendChild(groupDiv);
+            setTimeout(() => { if(document.getElementById('message-box').className === 'msg-success') document.getElementById('message-box').textContent = ""; }, 3000);
+        }
+    </script>
+</body>
+</html>

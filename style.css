@@ -1,0 +1,218 @@
+/* --- style.css --- */
+:root {
+    --primary-color: #006699;
+    --bg-color: #fdfdf5;
+    --panel-bg: #eeeeee;
+    --success-color: #00AA55;
+    --error-color: #AA0055;
+    --warning-color: #FF6600;
+    --paper-bg: #ffffff;
+    --text-color: #333;
+}
+
+body {
+    font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: var(--bg-color);
+    margin: 0;
+    padding: 20px;
+    color: var(--text-color);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+}
+
+h1, h2, h3 { color: var(--primary-color); text-align: center; }
+h1 { font-family: Georgia, serif; margin-bottom: 0.5em; }
+
+/* Layout Principal (Jeu) */
+.main-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    width: 100%;
+    max-width: 1200px;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+/* Zone de Contenu Textuel (Pages 1, 2, 5) */
+.content-card {
+    background-color: var(--paper-bg);
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 40px;
+    max-width: 800px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    line-height: 1.6;
+    font-size: 1.1em;
+    margin-bottom: 20px;
+}
+.highlight { font-weight: bold; color: var(--primary-color); }
+
+/* Navigation */
+.nav-links {
+    margin-top: 20px;
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+.btn {
+    text-decoration: none;
+    background-color: var(--primary-color);
+    color: white;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 5px;
+    transition: background 0.3s;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 1rem;
+}
+.btn:hover { background-color: #004466; }
+.btn:disabled { background-color: #ccc; cursor: not-allowed; }
+.link-simple { color: var(--primary-color); text-decoration: underline; align-self: center; }
+
+/* --- ÉLÉMENTS DE JEU (Pages 3, 4, 6, 7) --- */
+
+.game-area { flex: 1; min-width: 300px; display: flex; flex-direction: column; gap: 20px; }
+
+/* --- Panneau d'information COMPACT --- */
+.info-panel {
+    flex: 0 0 280px; /* Un peu moins large pour laisser de la place au jeu */
+    height: 400px;   /* Hauteur fixe raisonnable */
+    overflow-y: auto; /* Scroll si ça dépasse encore */
+    background-color: var(--panel-bg);
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    padding: 10px; /* Padding réduit (était 20px) */
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    box-sizing: border-box;
+    font-size: 0.95rem; /* Police globale légèrement réduite */
+}
+
+/* En-tête du panneau (Symbole + Nom) compacté */
+.info-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    border-bottom: 2px solid var(--primary-color);
+    padding-bottom: 8px;
+    margin-bottom: 10px;
+}
+
+#info-symbole {
+    font-size: 2.2em;
+    line-height: 1;
+    font-weight: bold;
+    color: var(--primary-color);
+    min-width: 60px;
+    text-align: center;
+}
+
+#info-nom {
+    font-size: 1.1em;
+    font-weight: bold;
+    color: #333;
+    line-height: 1.1;
+}
+
+/* Les items d'information */
+.info-item {
+    margin-bottom: 8px; /* Marge réduite (était 15px) */
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 4px;
+}
+
+/* Supprime la ligne de séparation sous le dernier élément d'info */
+.info-item:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+.info-label {
+    font-weight: bold;
+    font-size: 0.75em; /* Label plus petit */
+    color: #666;
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 2px; /* Collé à la valeur */
+}
+
+.info-value {
+    display: block;
+    font-weight: 500;
+    color: var(--primary-color);
+    font-size: 0.9em; /* Texte de description plus petit */
+    line-height: 1.25; /* Interligne resserré pour gagner de la place */
+    white-space: pre-wrap; /* Gère mieux les retours à la ligne */
+}
+
+/* Styles spécifiques pour les propriétés (couleurs) */
+#info-propPhy { color: #007a52; }
+#info-propChi { color: #d64a18; }
+
+/* Scrollbar plus discrète (Webkit uniquement: Chrome/Safari/Edge) */
+.info-panel::-webkit-scrollbar { width: 6px; }
+.info-panel::-webkit-scrollbar-track { background: #f1f1f1; }
+.info-panel::-webkit-scrollbar-thumb { background: #ccc; border-radius: 3px; }
+.info-panel::-webkit-scrollbar-thumb:hover { background: #999; }
+
+/* Cartes et Pools */
+.card-pool {
+    display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;
+    padding: 15px; border: 2px dashed #ccc; border-radius: 8px;
+    min-height: 100px; background: rgba(255,255,255,0.5);
+}
+
+.element-card {
+    width: 55px; height: 55px;
+    background-color: white;
+    border: 2px solid var(--primary-color);
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.3em; font-weight: bold; color: var(--primary-color);
+    cursor: grab; user-select: none;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+    transition: transform 0.1s;
+    z-index: 10;
+}
+.element-card:hover { transform: scale(1.1); background-color: #f0f8ff; }
+.element-card.correct { border-color: var(--success-color); background-color: #e6fffa; color: var(--success-color); }
+.element-card.incorrect { border-color: var(--error-color); background-color: #ffe6e6; color: var(--error-color); }
+
+/* Slots (Zones de dépôt) */
+.slots-container { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; padding: 10px; background-color: rgba(255,255,255,0.6); border-radius: 8px; }
+.slot {
+    width: 60px; height: 60px;
+    background-color: #fff; border: 2px solid #bbb; border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+}
+.slot::before { content: attr(data-index); position: absolute; top: 2px; left: 4px; font-size: 0.7em; color: #aaa; }
+.slot.drag-over { background-color: #e0f7fa; border-color: var(--primary-color); transform: scale(1.05); }
+
+/* Spécifique Page 04 (Test Box) */
+.test-zone {
+    border: 3px solid var(--primary-color); background-color: #fff;
+    min-height: 120px; border-radius: 10px;
+    display: flex; justify-content: center; align-items: center;
+    flex-wrap: wrap; gap: 10px; padding: 20px; position: relative;
+}
+.test-zone:empty::before { content: "Déposez ici les éléments d'une même famille"; color: #ccc; }
+
+/* Spécifique Page 06/07 (Grille) */
+.periodic-grid {
+    display: grid; grid-template-columns: repeat(8, 1fr);
+    gap: 5px; background-color: #ddd; padding: 10px; border-radius: 5px;
+}
+@media (max-width: 600px) { .periodic-grid { grid-template-columns: repeat(4, 1fr); } }
+
+/* Feedback */
+.controls { text-align: center; margin-top: 20px; padding: 20px; border-top: 1px solid #ddd; width: 100%; }
+#message-box { margin-top: 15px; font-weight: bold; font-size: 1.1em; min-height: 3em; }
+.msg-success { color: var(--success-color); }
+.msg-error { color: var(--error-color); }
+.msg-partial { color: var(--warning-color); }

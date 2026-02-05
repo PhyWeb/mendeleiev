@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Placement de l'Hydrogène</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="data.js"></script>
+</head>
+<body>
+    <header>
+        <h2>Où placer l'Hydrogène ?</h2>
+        <p>Essayez de placer l'<strong>Hydrogène (H)</strong> en tenant compte de sa masse et de sa famille.</p>
+    </header>
+
+    <div class="main-container">
+        <section class="game-area">
+            <div class="card-pool" id="pool" ondrop="drop(event)" ondragover="allowDrop(event)" style="min-height:80px;"></div>
+            <div class="periodic-grid" id="grid"></div>
+        </section>
+
+        <aside class="info-panel">
+            <h3 style="text-align:center;">Détails</h3>
+            <div style="text-align:center;"><span id="info-symbole" class="info-value">H</span></div>
+            <span class="info-label">Masse</span><span class="info-value">1.0</span>
+            <span class="info-label">Propriétés</span><span class="info-value">Gaz très léger. Explosif avec O2. Réagit avec Cl2.</span>
+        </aside>
+    </div>
+
+    <footer class="controls">
+        <button class="btn" onclick="validerH()">Vérifier la position de H</button>
+        <div id="message-box"></div>
+        <div class="nav-links">
+             <a href="tableau_periodique_intro.html" id="btn-fin" class="btn" style="display:none;">Retour accueil</a>
+        </div>
+    </footer>
+
+    <script>
+        const pool = document.getElementById('pool');
+        const grid = document.getElementById('grid');
+
+        // Création grille
+        for(let i=0; i<32; i++) {
+            let slot = document.createElement('div');
+            slot.className = 'slot';
+            slot.setAttribute('data-index', i);
+            slot.ondrop = drop; slot.ondragover = allowDrop;
+            grid.appendChild(slot);
+        }
+
+        // Init : On place tout SAUF H qui va dans le pool
+        elementsData.forEach(el => {
+            let card = document.createElement('div');
+            card.className = 'element-card';
+            card.id = el.id;
+            card.textContent = el.id;
+            
+            if(el.id === "H") {
+                card.draggable = true;
+                card.ondragstart = drag;
+                pool.appendChild(card);
+            } else {
+                card.style.backgroundColor = "#eee";
+                card.style.color = "#888";
+                card.style.borderColor = "#ccc";
+                let slot = grid.querySelector(`.slot[data-index='${el.pos}']`);
+                if(slot) slot.appendChild(card);
+            }
+        });
+
+        function allowDrop(ev) { ev.preventDefault(); }
+        function drag(ev) { ev.dataTransfer.setData("text", ev.target.id); }
+        function drop(ev) {
+            ev.preventDefault();
+            let data = ev.dataTransfer.getData("text");
+            if(data !== "H") return; 
+            let el = document.getElementById(data);
+            if(ev.target.classList.contains('slot') && ev.target.children.length === 0) {
+                ev.target.appendChild(el);
+            } else if (ev.target.id === 'pool') pool.appendChild(el);
+        }
+
+        function validerH() {
+            let hCard = document.getElementById("H");
+            let parent = hCard.parentElement;
+            let msg = document.getElementById('message-box');
+
+            if(parent.classList.contains('slot')) {
+                let idx = parseInt(parent.getAttribute('data-index'));
+                if(idx === 0) {
+                    hCard.className = "element-card correct";
+                    msg.innerHTML = "Bravo ! H est dans la colonne 1.";
+                    msg.className = "msg-success";
+                    document.getElementById('btn-fin').style.display = 'inline-block';
+                } else if (idx === 6 || idx === 14) {
+                     hCard.className = "element-card incorrect";
+                     msg.innerHTML = "Pas bête (famille 7), mais Mendeleïev a privilégié la masse : case 1.";
+                     msg.className = "msg-partial";
+                } else {
+                    hCard.className = "element-card incorrect";
+                    msg.innerHTML = "H est le plus léger des éléments (Case 1).";
+                    msg.className = "msg-error";
+                }
+            } else {
+                msg.innerHTML = "Placez l'Hydrogène dans la grille.";
+            }
+        }
+    </script>
+</body>
+</html>
