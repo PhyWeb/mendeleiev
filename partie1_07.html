@@ -21,10 +21,31 @@
         </section>
 
         <aside class="info-panel">
-            <h3 style="text-align:center;">Détails</h3>
-            <div style="text-align:center;"><span id="info-symbole" class="info-value">H</span></div>
-            <span class="info-label">Masse</span><span class="info-value">1.0</span>
-            <span class="info-label">Propriétés</span><span class="info-value">Gaz très léger. Explosif avec O2. Réagit avec Cl2.</span>
+            <div class="info-header">
+                <div id="info-symbole">--</div>
+                <div id="info-nom">Survolez un élément</div>
+            </div>
+            
+            <div class="info-item">
+                <span class="info-label">Masse atomique (H=1)</span>
+                <span id="info-masse" class="info-value"></span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Formule corps simple</span>
+                <span id="info-formule" class="info-value"></span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Propriétés Physiques</span>
+                <span id="info-propPhy" class="info-value"></span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Propriétés Chimiques</span>
+                <span id="info-propChi" class="info-value"></span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Composés</span>
+                <span id="info-composes" class="info-value"></span>
+            </div>
         </aside>
     </div>
 
@@ -54,13 +75,24 @@
         elementsData.forEach(el => {
             if(el.id === "H") {
                 // Pour l'Hydrogène, on utilise la Factory (il est draggable et interactif)
-                pool.appendChild(createCard(el));
+                const hCard = createCard(el, true);
+                pool.appendChild(hCard);
             } else {
                 // Pour les autres, création manuelle "simplifiée" (non interactifs, grisés)
                 let card = document.createElement('div');
                 card.className = 'element-card';
                 card.id = el.id;
-                card.textContent = el.id;
+                
+                // Conteneur pour le symbole
+                const symboleSpan = document.createElement('span');
+                symboleSpan.textContent = el.id;
+                card.appendChild(symboleSpan);
+                
+                // Ajout de la masse sous le symbole
+                const masseDiv = document.createElement('div');
+                masseDiv.className = 'element-mass';
+                masseDiv.textContent = `m = ${el.masse}`;
+                card.appendChild(masseDiv);
                 
                 // Styles spécifiques "désactivé"
                 card.style.backgroundColor = "#eee";
@@ -71,6 +103,9 @@
                 if(slot) slot.appendChild(card);
             }
         });
+
+        // Afficher automatiquement les infos de H au chargement
+        showInfo("H");
 
         function drop(ev) {
             ev.preventDefault();
@@ -86,6 +121,11 @@
 
         function validerH() {
             let hCard = document.getElementById("H");
+            if(!hCard) {
+                document.getElementById('message-box').innerHTML = "Erreur : carte H introuvable.";
+                return;
+            }
+            
             let parent = hCard.parentElement;
             let msg = document.getElementById('message-box');
 
@@ -98,15 +138,16 @@
                     document.getElementById('btn-fin').style.display = 'inline-block';
                 } else if (idx === 6 || idx === 14) {
                      hCard.className = "element-card incorrect";
-                     msg.innerHTML = "Pas bête (famille 7), mais Mendeleïev a privilégié la masse : case 1.";
+                     msg.innerHTML = "Pas bête (famille 7), mais Mendeleïev a privilégié la masse.";
                      msg.className = "msg-partial";
                 } else {
                     hCard.className = "element-card incorrect";
-                    msg.innerHTML = "H est le plus léger des éléments (Case 1).";
+                    msg.innerHTML = "Vous n'avez pas su placer correctement l'élément H. Prenez en compte sa masse atomique et ses propriétés, <strong>principalement</strong> les formules de ses corps composés.";
                     msg.className = "msg-error";
                 }
             } else {
                 msg.innerHTML = "Placez l'Hydrogène dans la grille.";
+                msg.className = "msg-error";
             }
         }
     </script>
