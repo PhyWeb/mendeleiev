@@ -6,6 +6,7 @@
     <title>Placement de l'Hydrogène</title>
     <link rel="stylesheet" href="style.css">
     <script src="data.js"></script>
+    <script src="game.js"></script>
 </head>
 <body>
     <header>
@@ -15,7 +16,7 @@
 
     <div class="main-container">
         <section class="game-area">
-            <div class="card-pool" id="pool" ondrop="drop(event)" ondragover="allowDrop(event)" style="min-height:80px;"></div>
+            <div class="card-pool" id="pool" ondrop="drop(event)" ondragover="commonAllowDrop(event)" style="min-height:80px;"></div>
             <div class="periodic-grid" id="grid"></div>
         </section>
 
@@ -31,7 +32,7 @@
         <button class="btn" onclick="validerH()">Vérifier la position de H</button>
         <div id="message-box"></div>
         <div class="nav-links">
-             <a href="tableau_periodique_intro.html" id="btn-fin" class="btn" style="display:none;">Retour accueil</a>
+             <a href="index.html" id="btn-fin" class="btn" style="display:none;">Retour accueil</a>
         </div>
     </footer>
 
@@ -44,36 +45,39 @@
             let slot = document.createElement('div');
             slot.className = 'slot';
             slot.setAttribute('data-index', i);
-            slot.ondrop = drop; slot.ondragover = allowDrop;
+            slot.ondrop = drop; 
+            slot.ondragover = commonAllowDrop;
             grid.appendChild(slot);
         }
 
-        // Init : On place tout SAUF H qui va dans le pool
+        // Init
         elementsData.forEach(el => {
-            let card = document.createElement('div');
-            card.className = 'element-card';
-            card.id = el.id;
-            card.textContent = el.id;
-            
             if(el.id === "H") {
-                card.draggable = true;
-                card.ondragstart = drag;
-                pool.appendChild(card);
+                // Pour l'Hydrogène, on utilise la Factory (il est draggable et interactif)
+                pool.appendChild(createCard(el));
             } else {
+                // Pour les autres, création manuelle "simplifiée" (non interactifs, grisés)
+                let card = document.createElement('div');
+                card.className = 'element-card';
+                card.id = el.id;
+                card.textContent = el.id;
+                
+                // Styles spécifiques "désactivé"
                 card.style.backgroundColor = "#eee";
                 card.style.color = "#888";
                 card.style.borderColor = "#ccc";
+                
                 let slot = grid.querySelector(`.slot[data-index='${el.pos}']`);
                 if(slot) slot.appendChild(card);
             }
         });
 
-        function allowDrop(ev) { ev.preventDefault(); }
-        function drag(ev) { ev.dataTransfer.setData("text", ev.target.id); }
         function drop(ev) {
             ev.preventDefault();
             let data = ev.dataTransfer.getData("text");
+            // Seul H est autorisé à bouger sur cette page
             if(data !== "H") return; 
+            
             let el = document.getElementById(data);
             if(ev.target.classList.contains('slot') && ev.target.children.length === 0) {
                 ev.target.appendChild(el);

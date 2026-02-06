@@ -6,6 +6,7 @@
     <title>Recherche des ressemblances</title>
     <link rel="stylesheet" href="style.css">
     <script src="data.js"></script>
+    <script src="game.js"></script>
 </head>
 <body>
     <header>
@@ -15,10 +16,10 @@
 
     <div class="main-container">
         <section class="game-area">
-            <div class="card-pool" id="pool" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+            <div class="card-pool" id="pool" ondrop="drop(event)" ondragover="commonAllowDrop(event)"></div>
             
             <h3 style="margin-bottom:0; color: #006699;">Zone de test (glissez ici) :</h3>
-            <div class="test-zone" id="test-box" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+            <div class="test-zone" id="test-box" ondrop="drop(event)" ondragover="commonAllowDrop(event)"></div>
             
             <div class="controls" style="border:none; padding: 10px 0 0 0;">
                 <button class="btn" onclick="verifierFamille()">Valider ce groupe</button>
@@ -60,44 +61,25 @@
         const foundZone = document.getElementById('found-zone');
         let familiesFoundCount = 0;
 
-        // --- MODIFICATION ICI ---
-        // On utilise ORDRE_MASSE (défini dans data.js) pour générer les cartes.
-        // Cela garantit qu'elles sont "pré-ordonnées" comme demandé.
+        // Génération des cartes via game.js en suivant l'ordre de masse
         ORDRE_MASSE.forEach(id => {
-            if (id === "H") return; // On ignore H pour cet exercice
+            if (id === "H") return; 
 
             const el = elementsData.find(e => e.id === id);
             if (!el) return;
 
-            const div = document.createElement('div');
-            div.className = 'element-card';
-            div.id = el.id;
-            div.draggable = true;
-            div.textContent = el.id;
-            div.addEventListener('dragstart', (ev) => ev.dataTransfer.setData("text", ev.target.id));
-            div.addEventListener('mouseover', () => showInfo(el.id));
-            div.addEventListener('mouseout', clearInfo);
-            pool.appendChild(div);
+            // Utilisation de la Factory commune
+            const card = createCard(el);
+            pool.appendChild(card);
         });
 
-        function showInfo(id) {
-            const d = elementsData.find(e => e.id === id);
-            if (!d) return;
-            document.getElementById('info-nom').textContent = d.nom;
-            document.getElementById('info-symbole').textContent = d.id;
-            document.getElementById('info-masse').textContent = d.masse;
-            document.getElementById('info-formule').innerHTML = d.formule;
-            document.getElementById('info-propPhy').innerHTML = d.propPhy;
-            document.getElementById('info-propChi').innerHTML = d.propChi;
-            document.getElementById('info-composes').innerHTML = d.composes;
-        }
-        function clearInfo() {}
-
-        function allowDrop(ev) { ev.preventDefault(); }
+        // Fonction drop spécifique à cette page (gestion zone de test vs pool)
         function drop(ev) {
             ev.preventDefault();
             const el = document.getElementById(ev.dataTransfer.getData("text"));
+            // On empêche de redéplacer les cartes validées (classe 'locked')
             if(!el || el.classList.contains('locked')) return;
+            
             if (ev.currentTarget.id === 'test-box' || ev.currentTarget.id === 'pool') {
                 ev.currentTarget.appendChild(el);
             }
@@ -134,8 +116,6 @@
         }
 
         function viderZoneTest() {
-            // Remet les cartes dans le pool (à la fin, donc l'ordre peut être perdu si on vide, 
-            // mais l'initialisation est correcte).
             Array.from(testBox.children).forEach(c => pool.appendChild(c));
             document.getElementById('message-box').textContent = "";
         }
@@ -145,7 +125,10 @@
             const groupDiv = document.createElement('div');
             groupDiv.className = 'found-group';
             elements.forEach(card => {
-                card.draggable = false; card.classList.add('locked'); card.onclick = null;
+                // On retire les écouteurs pour figer la carte
+                card.draggable = false; 
+                card.classList.add('locked');
+                // Note : Les écouteurs mouseover de game.js restent actifs, ce qui est bien (on peut toujours consulter les infos)
                 groupDiv.appendChild(card);
             });
             foundZone.appendChild(groupDiv);

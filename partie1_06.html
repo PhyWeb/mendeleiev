@@ -6,6 +6,7 @@
     <title>Construction du Tableau</title>
     <link rel="stylesheet" href="style.css">
     <script src="data.js"></script>
+    <script src="game.js"></script>
 </head>
 <body>
     <header>
@@ -15,7 +16,7 @@
 
     <div class="main-container">
         <section class="game-area">
-            <div class="card-pool" id="pool" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+            <div class="card-pool" id="pool" ondrop="drop(event)" ondragover="commonAllowDrop(event)"></div>
             <div class="periodic-grid" id="grid"></div>
         </section>
 
@@ -65,26 +66,17 @@
             let slot = document.createElement('div');
             slot.className = 'slot';
             slot.setAttribute('data-index', i);
-            slot.ondrop = drop; slot.ondragover = allowDrop;
+            slot.ondrop = drop; 
+            slot.ondragover = commonAllowDrop; // Utilisation de la fonction partagée
             grid.appendChild(slot);
         }
 
-        // Remplissage du pool (Sans Hydrogène pour l'instant si on suit la logique originale)
+        // Remplissage du pool avec game.js
         elementsData.forEach(el => {
             if(el.id === "H") return; 
-
-            let card = document.createElement('div');
-            card.className = 'element-card';
-            card.id = el.id;
-            card.draggable = true;
-            card.textContent = el.id;
-            card.ondragstart = drag;
-            card.onmouseover = () => showInfo(el.id);
-            pool.appendChild(card);
+            pool.appendChild(createCard(el));
         });
 
-        function allowDrop(ev) { ev.preventDefault(); }
-        function drag(ev) { ev.dataTransfer.setData("text", ev.target.id); }
         function drop(ev) {
             ev.preventDefault();
             let el = document.getElementById(ev.dataTransfer.getData("text"));
@@ -93,19 +85,8 @@
             } else if (ev.target.id === 'pool') pool.appendChild(el);
         }
 
-        function showInfo(id) {
-            const data = elementsData.find(e => e.id === id);
-            if(data) {
-                document.getElementById('info-symbole').textContent = id;
-                document.getElementById('info-masse').textContent = data.masse;
-                document.getElementById('info-formule').innerHTML = data.formule;
-                document.getElementById('info-prop').innerHTML = data.propPhy; // Version courte pour cette page
-            }
-        }
-
         function validerTableau() {
             let errors = 0;
-            // On valide seulement les cartes présentes dans la grille
             document.querySelectorAll('.element-card').forEach(card => {
                 if(card.parentElement.classList.contains('slot')) {
                     let slotIdx = parseInt(card.parentElement.getAttribute('data-index'));

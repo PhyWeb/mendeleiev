@@ -62,43 +62,45 @@
         </div>
     </footer>
 
-    <script>
-        // ON UTILISE MAINTENANT elementsData et ORDRE_MASSE DEPUIS data.js
-
+    <script src="data.js"></script>
+    <script src="game.js"></script> <script>
         const pool = document.getElementById('pool');
         const slotsArea = document.getElementById('slots-area');
 
-        // Init Pool
+        // --- INITIALISATION SIMPLIFIÉE GRÂCE À GAME.JS ---
         elementsData.forEach(el => {
-            const div = document.createElement('div');
-            div.className = 'element-card';
-            div.id = el.id;
-            div.draggable = true;
-            div.textContent = el.id;
-            div.addEventListener('dragstart', drag);
-            div.addEventListener('mouseover', () => showInfo(el.id));
-            div.addEventListener('mouseout', clearInfo);
-            pool.appendChild(div);
+            // On utilise la fonction createCard de game.js
+            const card = createCard(el, true); 
+            pool.appendChild(card);
         });
 
-        // Init Slots
+        // Init Slots (Ça reste spécifique à cette page)
         for (let i = 1; i <= 19; i++) {
             const slot = document.createElement('div');
             slot.className = 'slot';
             slot.setAttribute('data-index', i);
-            slot.addEventListener('drop', drop);
-            slot.addEventListener('dragover', allowDrop);
+            
+            // On utilise commonAllowDrop de game.js
+            slot.addEventListener('dragover', commonAllowDrop); 
+            slot.addEventListener('drop', drop); // Le drop reste spécifique (logique de jeu)
+            
             if (i === 1) slot.title = "Plus léger";
             if (i === 19) slot.title = "Plus lourd";
             slotsArea.appendChild(slot);
         }
+        
+        // Configurer le pool pour recevoir les retours
+        pool.addEventListener('dragover', commonAllowDrop);
+        pool.addEventListener('drop', drop);
 
-        function allowDrop(ev) { ev.preventDefault(); }
-        function drag(ev) { ev.dataTransfer.setData("text", ev.target.id); }
+        // --- LOGIQUE SPÉCIFIQUE À CETTE PAGE ---
+        
         function drop(ev) {
             ev.preventDefault();
             const data = ev.dataTransfer.getData("text");
             const element = document.getElementById(data);
+            
+            // Logique de placement spécifique à l'exercice 1
             if (ev.target.classList.contains('slot')) {
                 if (ev.target.children.length > 0) pool.appendChild(ev.target.children[0]);
                 ev.target.appendChild(element);
@@ -107,27 +109,15 @@
             }
         }
 
-        function showInfo(id) {
-            const data = elementsData.find(e => e.id === id);
-            if (!data) return;
-            document.getElementById('info-nom').textContent = data.nom;
-            document.getElementById('info-symbole').textContent = data.id;
-            document.getElementById('info-masse').textContent = data.masse;
-            document.getElementById('info-formule').innerHTML = data.formule;
-            document.getElementById('info-propPhy').innerHTML = data.propPhy;
-            document.getElementById('info-propChi').innerHTML = data.propChi;
-            document.getElementById('info-composes').innerHTML = data.composes;
-        }
-        function clearInfo() {}
-
         function verifierClassement() {
+            // ... (Le code de vérification reste identique car spécifique à la page) ...
             let correctCount = 0;
             const slots = document.querySelectorAll('.slot');
             const messageBox = document.getElementById('message-box');
             
             slots.forEach((slot, index) => {
                 const elementInside = slot.querySelector('.element-card');
-                const expectedId = ORDRE_MASSE[index]; // Variable globale depuis data.js
+                const expectedId = ORDRE_MASSE[index]; 
 
                 if (elementInside) {
                     if (elementInside.id === expectedId) {
@@ -138,7 +128,8 @@
                     }
                 }
             });
-
+            
+            // ... suite de la vérification ...
             if (correctCount === 19) {
                 messageBox.innerHTML = "Bravo ! Votre classement est parfait.<br>Vous pouvez passer à l'étape suivante.";
                 messageBox.className = "msg-success";
