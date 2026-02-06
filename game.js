@@ -52,24 +52,27 @@ function commonDragStart(ev) {
 
 // --- 3. GÉNÉRATEUR DE CARTES (FACTORY) ---
 
-/**
- * Crée un élément DOM pour une carte
- * @param {Object} elementData - L'objet de données de l'élément (de data.js)
- * @param {boolean} isDraggable - Si la carte peut être déplacée
- * @returns {HTMLElement} La div de la carte
- */
 function createCard(elementData, isDraggable = true) {
     const div = document.createElement('div');
     div.className = 'element-card';
     div.id = elementData.id;
-    div.textContent = elementData.id;
+    
+    // Conteneur pour le Symbole (ex: Al)
+    const symboleSpan = document.createElement('span');
+    symboleSpan.textContent = elementData.id;
+    div.appendChild(symboleSpan);
+
+    // Ajout de l'indication de la masse sous le symbole
+    const masseDiv = document.createElement('div');
+    masseDiv.className = 'element-mass';
+    masseDiv.textContent = `m = ${elementData.masse}`;
+    div.appendChild(masseDiv);
     
     if (isDraggable) {
         div.draggable = true;
         div.addEventListener('dragstart', commonDragStart);
     }
 
-    // Ajout des écouteurs pour le panneau d'info
     div.addEventListener('mouseover', () => showInfo(elementData.id));
     div.addEventListener('mouseout', clearInfo);
 

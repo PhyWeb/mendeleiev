@@ -11,7 +11,8 @@
 <body>
     <header>
         <h2>Construction du Tableau</h2>
-        <p>Disposez les éléments dans la grille (8 colonnes) en respectant masses croissantes et familles.</p>
+        <p>A ce stade et à l'aide des résultats précédents, vous devez constituer le tableau comme l'a fait Mendeleiev pour la première fois dans l'histoire de la chimie.</p>
+        <p><strong>Une fois le tableau réalisé sur la table à l'aide des cartes,</strong> reproduisez le ci-dessous en déplaçant les vignettes vers les cases du tableau situé en bas de page avant de valider votre réponse.</p>
     </header>
 
     <div class="main-container">
@@ -62,12 +63,12 @@
         const grid = document.getElementById('grid');
 
         // Génération grille 4x8 (32 cases)
-        for(let i=0; i<32; i++) {
+        for(let i=8; i<32; i++) {
             let slot = document.createElement('div');
             slot.className = 'slot';
             slot.setAttribute('data-index', i);
             slot.ondrop = drop; 
-            slot.ondragover = commonAllowDrop; // Utilisation de la fonction partagée
+            slot.ondragover = commonAllowDrop; 
             grid.appendChild(slot);
         }
 

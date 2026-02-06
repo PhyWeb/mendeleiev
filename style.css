@@ -64,10 +64,19 @@ h2 { margin: 10px 0; font-size: 1.5rem; }
     color: var(--primary-color);
     cursor: grab; 
     user-select: none;
+    line-height: 1;
+    flex-direction: column;
     box-shadow: 2px 2px 5px rgba(0,0,0,0.15);
     transition: transform 0.1s;
 }
 .element-card:hover { transform: scale(1.1); background-color: #f8f9fa; }
+
+.element-mass {
+    font-size: 0.55em;      /* Texte beaucoup plus petit pour la masse */
+    font-weight: normal;
+    color: #666;            /* Couleur plus discrète */
+    margin-top: 2px;
+}
 
 /* États de validation */
 .element-card.correct { border-color: var(--success-color); background-color: #e6fffa; color: var(--success-color); }
@@ -107,6 +116,13 @@ h2 { margin: 10px 0; font-size: 1.5rem; }
 
 .info-item { margin-bottom: 8px; border-bottom: 1px solid #ddd; padding-bottom: 4px; }
 
+/* Ajoutez cette règle juste en dessous */
+.info-item:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
 .info-label {
     font-weight: bold; font-size: 0.75em; color: #666;
     text-transform: uppercase; display: block; margin-bottom: 2px;
@@ -141,12 +157,10 @@ h2 { margin: 10px 0; font-size: 1.5rem; }
 }
 
 .slot {
-    width: 60px; height: 60px;
+    width: 55px; height: 55px;
     background-color: #fff; border: 2px solid #bbb; border-radius: 6px;
     display: flex; align-items: center; justify-content: center; position: relative;
 }
-.slot::before { content: attr(data-index); position: absolute; top: 2px; left: 4px; font-size: 0.7em; color: #aaa; }
-
 /* --- RECHERCHE DES FAMILLES --- */
 .test-zone {
     border: 3px solid var(--primary-color); background-color: #fff;
@@ -156,7 +170,14 @@ h2 { margin: 10px 0; font-size: 1.5rem; }
 }
 
 /* --- BOUTONS & FEEDBACK --- */
-.nav-links { margin-top: 15px; display: flex; gap: 15px; justify-content: center; }
+.nav-links {
+    margin-top: 15px;
+    display: flex;
+    gap: 20px;           /* Espace entre les boutons */
+    justify-content: center;
+    align-items: center; /* Aligne le texte du lien avec le centre du bouton */
+}
+
 .btn {
     text-decoration: none; background-color: var(--primary-color); color: white;
     padding: 12px 25px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer;
@@ -167,6 +188,46 @@ h2 { margin: 10px 0; font-size: 1.5rem; }
 
 .msg-success { color: var(--success-color); }
 .msg-error { color: var(--error-color); }
+/* --- ORGANISATION DES FAMILLES TROUVÉES --- */
+
+.found-zone {
+    display: flex;
+    flex-direction: column; /* Une famille par ligne */
+    gap: 5px;
+    background: rgba(255,255,255,0.5);
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+}
+
+.found-group {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding-left: 20px; /* Espace pour la première carte */
+    height: 48px;
+}
+
+/* Effet de superposition des cartes */
+.found-group .element-card.locked {
+    margin-left: -25px; /* Les cartes se chevauchent */
+    position: relative;
+    box-shadow: -3px 0 5px rgba(0,0,0,0.2);
+    z-index: 1;
+    transition: transform 0.2s, z-index 0s;
+}
+
+/* La première carte de la ligne n'a pas de décalage */
+.found-group .element-card.locked:first-child {
+    margin-left: 0;
+}
+
+/* Au survol d'une carte validée, elle passe devant */
+.found-group .element-card.locked:hover {
+    z-index: 10;
+    transform: scale(1.1) translateY(-5px);
+    cursor: pointer;
+}
 
 /* Scrollbar discrète */
 .info-panel::-webkit-scrollbar { width: 6px; }

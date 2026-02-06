@@ -11,7 +11,11 @@
 <body>
     <header>
         <h2>Recherche des familles</h2>
-        <p style="text-align:center;">Étudiez les fiches pour constituer des familles dans la zone de test.<br><em>(L'Hydrogène est exclu).</em></p>
+        <p>Vous devez maintenant étudier attentivement les fiches pour essayer, comme l'a fait Mendeleiev, de constituer des familles d'éléments à partir de leurs ressemblances de propriétés:</p>
+        <ul>
+            <li>Observez les propriétés physiques et chimiques.</li>
+            <li>Observez les formules des corps simples et composés des éléments</li>
+        </ul>
     </header>
 
     <div class="main-container">
@@ -43,7 +47,6 @@
         <div class="found-zone" id="found-zone">
             <div style="width: 100%; margin-bottom: 5px;">
                 <h4 style="margin:0; color:#555;">Familles identifiées :</h4>
-                <span id="placeholder-found" style="color:#888; font-style:italic;">Les familles validées apparaîtront ici...</span>
             </div>
         </div>
     </div>
@@ -90,38 +93,65 @@
             const msg = document.getElementById('message-box');
             
             if (children.length < 2) {
-                msg.textContent = "Il faut au moins 2 éléments."; msg.className = "msg-error"; return;
+                msg.textContent = "Il faut au moins 2 éléments."; 
+                msg.className = "msg-error"; 
+                return;
             }
 
             const currentIds = children.map(c => c.id);
             const firstEl = elementsData.find(e => e.id === currentIds[0]);
-            
             const targetFam = FAMILLES[firstEl.famille]; 
-
             const allCorrect = currentIds.every(id => targetFam.includes(id));
 
             if (!allCorrect) {
-                msg.textContent = "Intrus détecté !"; msg.className = "msg-error"; testBox.style.borderColor = "#AA0055";
+                msg.textContent = "Intrus détecté !"; 
+                msg.className = "msg-error"; 
+                testBox.style.borderColor = "#AA0055";
             } else {
                 if (currentIds.length === targetFam.length) {
-                    msg.innerHTML = "Famille complète trouvée !"; msg.className = "msg-success"; testBox.style.borderColor = "#00AA55";
+                    msg.innerHTML = "Famille complète trouvée !"; 
+                    msg.className = "msg-success"; 
+                    testBox.style.borderColor = "#00AA55";
                     archiverFamille(children);
                     familiesFoundCount++;
                     if(familiesFoundCount >= 1) document.getElementById('btn-suite').style.display = 'inline-block';
-                } else {
-                    msg.textContent = "Famille incomplète."; msg.className = "msg-partial"; testBox.style.borderColor = "#FF6600";
+                } 
+                // --- NOUVEAU MESSAGE SPÉCIAL ICI ---
+                else if (currentIds.length >= 2 && targetFam.length - currentIds.length === 1) {
+                    msg.textContent = "Presque ! Il ne manque plus qu'un élément pour cette famille.";
+                    msg.className = "msg-partial";
+                    testBox.style.borderColor = "#FFCC00";
+                } 
+                else {
+                    msg.textContent = "Famille incomplète."; 
+                    msg.className = "msg-partial"; 
+                    testBox.style.borderColor = "#FF6600";
                 }
             }
             setTimeout(() => { testBox.style.borderColor = ""; }, 2000);
         }
 
         function viderZoneTest() {
+            // 1. Remettre toutes les cartes de la zone de test dans le pool
             Array.from(testBox.children).forEach(c => pool.appendChild(c));
+            
+            // 2. Trier le pool selon l'ordre des masses défini par Mendeleïev
+            const cards = Array.from(pool.children);
+            
+            cards.sort((a, b) => {
+                // On compare la position des IDs dans le tableau ORDRE_MASSE
+                const indexA = ORDRE_MASSE.indexOf(a.id);
+                const indexB = ORDRE_MASSE.indexOf(b.id);
+                return indexA - indexB;
+            });
+
+            // 3. Ré-injecter les cartes triées dans le pool
+            cards.forEach(card => pool.appendChild(card));
+
             document.getElementById('message-box').textContent = "";
         }
 
         function archiverFamille(elements) {
-            document.getElementById('placeholder-found').style.display = 'none';
             const groupDiv = document.createElement('div');
             groupDiv.className = 'found-group';
             elements.forEach(card => {
