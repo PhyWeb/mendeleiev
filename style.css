@@ -22,6 +22,8 @@ body {
     flex-direction: column;
     align-items: center;
     min-height: 100vh;
+    box-sizing: border-box; /* Crucial pour que le padding n'ajoute pas de hauteur */
+    overflow-x: hidden;     /* Empêche le scroll horizontal parasite */
 }
 
 h1, h2, h3 { color: var(--primary-color); text-align: center; }
@@ -91,7 +93,7 @@ h2 { margin: 10px 0; font-size: 1.5rem; }
 .info-panel {
     flex: 0 0 280px;
     height: 400px; 
-    overflow-y: auto;
+    overflow-y: auto; /* Garde 'auto' pour qu'elle n'apparaisse que si le texte déborde */
     background-color: var(--panel-bg);
     border: 2px solid #ccc;
     border-radius: 8px;
@@ -144,7 +146,7 @@ h2 { margin: 10px 0; font-size: 1.5rem; }
 .card-pool {
     display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;
     padding: 15px; border: 2px dashed #adb5bd; border-radius: 8px;
-    min-height: 80px; background: rgba(255,255,255,0.4);
+    min-height: 140px; background: rgba(255,255,255,0.4);
 }
 
 .slots-container, .periodic-grid {
