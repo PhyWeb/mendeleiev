@@ -98,7 +98,7 @@ const elementsData = [
         formule: "N<sub>2</sub>", 
         composes: "NH<sub>3</sub>&nbsp;&nbsp;&nbsp;&nbsp;NO<sub>2</sub>", 
         propPhy: "* Gaz incolore et inodore très peu soluble dans l'eau<br/>* Moins dense que l'air", 
-        propChi: "* A haute température ou en présence d'arc électrique, il peut se combiner avec O2" 
+        propChi: "* A haute température ou en présence d'arc électrique, il peut se combiner avec O<sub>2</sub>" 
     },
     { 
         id: "Na", nom: "SODIUM", masse: "23,0", famille: "1", pos: 16,
