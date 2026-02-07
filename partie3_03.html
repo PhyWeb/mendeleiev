@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Le génie de Mendeleïev - Page 3</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+        }
+        .comparison-table th, .comparison-table td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        .comparison-table th {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        .comparison-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        .highlight-prediction {
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+        .highlight-reality {
+            color: var(--success-color);
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h2>Le triomphe de la prévision (1/2)</h2>
+    </header>
+
+    <main class="main-container">
+        <div class="content-card">
+            <h3>L'Eka-Aluminium vs Le Gallium</h3>
+            <p>
+                Mendeleïev avait laissé une case vide sous l'Aluminium (Al) et prédit l'existence d'un corps qu'il nomma <strong>Eka-Aluminium</strong>.
+                Il en décrivit les propriétés en se basant sur celles de l'Aluminium.
+            </p>
+            <p>
+                En 1875, le français <strong>Lecoq de Boisbaudran</strong> découvrit un nouveau métal qu'il appela <strong>Gallium</strong>.
+                Regardez la précision stupéfiante des prévisions de Mendeleïev comparées à la réalité découverte 4 ans plus tard :
+            </p>
+
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Propriété</th>
+                        <th>Prédictions de Mendeleïev (1871)<br><small>(Eka-Aluminium)</small></th>
+                        <th>Découvertes de Lecoq (1875)<br><small>(Gallium)</small></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Masse atomique</strong></td>
+                        <td class="highlight-prediction">environ 68</td>
+                        <td class="highlight-reality">69,9</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Densité</strong></td>
+                        <td class="highlight-prediction">environ 6,0</td>
+                        <td class="highlight-reality">5,96</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Point de fusion</strong></td>
+                        <td class="highlight-prediction">assez bas</td>
+                        <td class="highlight-reality">30°C</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Formule de l'oxyde</strong></td>
+                        <td class="highlight-prediction">Ea<sub>2</sub>O<sub>3</sub></td>
+                        <td class="highlight-reality">Ga<sub>2</sub>O<sub>3</sub></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Solubilité</strong></td>
+                        <td class="highlight-prediction">L'oxyde devrait être soluble dans les acides et les bases</td>
+                        <td class="highlight-reality">L'oxyde est soluble dans les acides et la potasse (base)</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p>
+                La correspondance est telle que Mendeleïev, sans jamais avoir vu le métal, écrivit à Lecoq de Boisbaudran pour lui dire que sa première mesure de densité (4,7) devait être fausse ! Lecoq refit ses mesures sur un échantillon plus pur et trouva... 5,96, confirmant la prévision du Russe.
+            </p>
+        </div>
+    </main>
+
+    <nav class="nav-links">
+        <a href="partie3_02.html" class="link-simple">Retour</a>
+        <a href="partie3_04.html" class="btn">SUITE : L'Eka-Silicium &rarr;</a>
+    </nav>
+
+</body>
+</html>

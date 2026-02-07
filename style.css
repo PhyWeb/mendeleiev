@@ -235,3 +235,118 @@ h2 { margin: 10px 0; font-size: 1.5rem; }
 /* Scrollbar discrète */
 .info-panel::-webkit-scrollbar { width: 6px; }
 .info-panel::-webkit-scrollbar-thumb { background: #ccc; border-radius: 3px; }
+
+/* --- Ajouts pour Partie 3 (Grille et Quiz) --- */
+
+/* Zone Question (Intégrée dans game-area mais visuellement distincte) */
+.question-box {
+    background-color: #fff;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    border-left: 5px solid #228be6;
+}
+
+.consigne {
+    font-weight: normal;
+    color: #666;
+    font-size: 0.9em;
+    font-style: italic;
+}
+
+.highlight-vacantes {
+    color: #c92a2a;
+    background-color: #fff5f5;
+    padding: 0 4px;
+    border-radius: 4px;
+    font-weight: bold;
+}
+
+/* Options du Quiz */
+.quiz-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.radio-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+}
+
+.radio-option:hover {
+    background-color: #f1f3f5;
+}
+
+.radio-option input {
+    margin: 0;
+    transform: scale(1.1);
+    accent-color: #228be6;
+}
+
+/* --- GRILLE MENDELEIEV --- */
+.mendeleev-grid {
+    display: grid;
+    /* Définition précise des colonnes pour respecter l'alignement */
+    /* Gr 1, 2 (60px) | Transition (flexible) | Gr 3, 4, 5, 6, 7 (60px) */
+    grid-template-columns: repeat(2, 60px) 1fr repeat(5, 60px);
+    gap: 5px;
+    padding: 15px;
+    background-color: rgba(255, 255, 255, 0.6);
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    align-items: center;
+    overflow-x: auto;
+}
+
+/* Bloc Transition (Ti...Zn) */
+.transition-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    background-color: #e9ecef;
+    border-radius: 4px;
+    padding: 2px;
+    height: 100%;
+    /* Important pour garder Ti Cu Zn sur la même ligne */
+    white-space: nowrap; 
+}
+
+/* Pour réduire un peu la taille des cartes dans la transition si ça déborde */
+.transition-container .element-card {
+    transform: scale(0.9);
+    margin: 0;
+}
+
+.transition-text {
+    font-size: 0.7rem;
+    text-align: center;
+    color: #495057;
+    line-height: 1.1;
+    margin: 0 5px;
+}
+
+/* Case vide (Le trou) */
+.hole-box {
+    grid-column: span 2; 
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background-color: #fff5f5;
+    border: 2px dashed #ffc9c9;
+    color: #e03131;
+    font-size: 0.8rem;
+    font-weight: bold;
+    border-radius: 4px;
+    line-height: 1.1;
+    padding: 2px;
+}
