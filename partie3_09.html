@@ -8,8 +8,8 @@
     <script src="data.js"></script>
     <script src="game.js"></script>
     <style>
-        /* Grille identique à la page 8 : 8 colonnes standard */
-        .mendeleev-grid {
+        /* Définition locale au cas où style.css n'est pas à jour */
+        .grid-missing-col {
             display: grid;
             grid-template-columns: repeat(8, 60px);
             gap: 5px;
@@ -21,15 +21,6 @@
             width: fit-content;
         }
 
-        /* Espaceur pour la ligne 1 (entre H et He) : s'étend sur 6 colonnes */
-        .spacer-row1 { grid-column: 2 / span 6; }
-        
-        /* Force la carte à être le référentiel pour le positionnement absolu du numéro Z */
-        .element-card {
-            position: relative !important; 
-        }
-
-        /* Style spécifique pour le message de fin */
         .conclusion-text {
             text-align: center;
             font-size: 1.2rem;
@@ -58,31 +49,7 @@
                 </p>
             </div>
 
-            <div class="mendeleev-grid" id="grid-container">
-                
-                <div id="card-H"></div>
-                <div class="spacer-row1"></div>
-                <div id="card-He"></div>
-
-                <div id="card-Li"></div>
-                <div id="card-Be"></div>
-                <div id="card-B"></div>
-                <div id="card-C"></div>
-                <div id="card-N"></div>
-                <div id="card-O"></div>
-                <div id="card-F"></div>
-                <div id="card-Ne"></div>
-
-                <div id="card-Na"></div>
-                <div id="card-Mg"></div>
-                <div id="card-Al"></div>
-                <div id="card-Si"></div>
-                <div id="card-P"></div>
-                <div id="card-S"></div>
-                <div id="card-Cl"></div>
-                <div id="card-Ar"></div>
-
-                </div>
+            <div id="grid-container"></div>
 
         </section>
 
@@ -107,48 +74,23 @@
     </footer>
 
     <script>
-        // --- 1. DONNÉES Z COMPLÈTES (Mapping ID -> Z) ---
-        // Limité aux 3 premières périodes (jusqu'à Argon Z=18)
-        const zMap = {
-            "H": 1, "He": 2,
-            "Li": 3, "Be": 4, "B": 5, "C": 6, "N": 7, "O": 8, "F": 9, "Ne": 10,
-            "Na": 11, "Mg": 12, "Al": 13, "Si": 14, "P": 15, "S": 16, "Cl": 17, "Ar": 18
-        };
+        // --- 1. AJOUT DES DONNÉES MANQUANTES (Gaz Nobles) ---
+        // Comme ils n'étaient pas dans data.js au départ, on les ajoute ici pour qu'ils s'affichent
+        const nobleGases = [
+            { id: "He", nom: "HELIUM", masse: "4,0", formule: "He", propPhy: "* Gaz incolore<br>* Très léger", propChi: "* Inerte (ne réagit pas)", composes: "Aucun composé stable connu" },
+            { id: "Ne", nom: "NEON", masse: "20,2", formule: "Ne", propPhy: "* Gaz incolore<br>* Emet une lumière rouge intense", propChi: "* Chimiquement inerte", composes: "Aucun composé naturel" },
+            { id: "Ar", nom: "ARGON", masse: "39,9", formule: "Ar", propPhy: "* Gaz incolore<br>* 1% de l'atmosphère", propChi: "* Extrêmement stable", composes: "Aucun à température ambiante" }
+        ];
 
-        // --- 2. CRÉATION DES CARTES ---
-        function createCardZ(id) {
-            const zVal = zMap[id] || "";
-            
-            const div = document.createElement('div');
-            div.className = 'element-card';
-            
-            // Numéro atomique Z
-            const zSpan = document.createElement('span');
-            zSpan.className = 'atomic-number';
-            zSpan.textContent = zVal;
-            div.appendChild(zSpan);
-
-            // Symbole
-            const symSpan = document.createElement('div');
-            symSpan.className = 'symbol-text';
-            symSpan.textContent = id;
-            div.appendChild(symSpan);
-
-            // Interaction Tooltip via game.js
-            div.onmouseover = () => showInfo(id);
-            div.onmouseout = clearInfo;
-
-            return div;
-        }
-
-        // --- 3. GÉNÉRATION AUTOMATIQUE ---
-        // On remplit les slots existants dans le HTML
-        Object.keys(zMap).forEach(id => {
-            const container = document.getElementById(`card-${id}`);
-            if (container) {
-                container.appendChild(createCardZ(id));
+        nobleGases.forEach(gas => {
+            // On vérifie si l'élément n'existe pas déjà avant de l'ajouter
+            if (!elementsData.find(e => e.id === gas.id)) {
+                elementsData.push(gas);
             }
         });
+
+        // --- 2. RENDU DE LA GRILLE ---
+        renderMendeleevGrid(document.getElementById('grid-container'), { mode: 'final' });
     </script>
 </body>
 </html>

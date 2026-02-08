@@ -1,7 +1,7 @@
 /* --- data.js --- */
 
-// Liste complète des éléments avec toutes les propriétés pour tous les exercices
 const elementsData = [
+    // --- Éléments existants ---
     { 
         id: "Al", nom: "ALUMINIUM", masse: "27,0", famille: "3", pos: 18,
         formule: "Al", 
@@ -134,6 +134,46 @@ const elementsData = [
         composes: "SiO<sub>2</sub>&nbsp;&nbsp;&nbsp;&nbsp;SiH<sub>4</sub>", 
         propPhy: "* Solide bleu acier, semi-conducteur", 
         propChi: "* Chauffé à blanc il brûle avec incandescence<br/>* Se combine à chaud avec le carbone" 
+    },
+    
+    // --- NOUVEAUX ÉLÉMENTS AJOUTÉS (Transition & Autres) ---
+    {
+        id: "Ti", nom: "TITANE", masse: "47,9", formule: "Ti",
+        propPhy: "* Métal dur, brillant<br/>* Masse volumique faible",
+        propChi: "* Métal peu corrodable<br/>",
+        composes: "TiO<sub>2</sub>&nbsp;&nbsp;&nbsp;&nbsp;TiH<sub>2</sub>&nbsp;&nbsp;&nbsp;&nbsp;TiCl<sub>3</sub>"
+    },
+    {
+        id: "Cu", nom: "CUIVRE", masse: "63,5", formule: "Cu",
+        propPhy: "* Métal de couleur caractéristique (rouge)<br/>* Malléable, ductile<br/>* Point de fusion peu élevé",
+        propChi: "* Nombreux composés d'intérêt ",
+        composes: "CuO&nbsp;&nbsp;&nbsp;&nbsp;CuS&nbsp;&nbsp;&nbsp;&nbsp;CuSO<sub>4</sub>"
+    },
+    {
+        id: "Zn", nom: "ZINC", masse: "65,4", formule: "Zn",
+        propPhy: "* Métal gris<br/>* Nombreux alliages intéressants",
+        propChi: "* Nombreux composés d'intérêt ",
+        composes: "ZnO&nbsp;&nbsp;&nbsp;&nbsp;ZnS&nbsp;&nbsp;&nbsp;&nbsp;ZnCO<sub>3</sub>"
+    },
+    {
+        id: "Se", nom: "SELENIUM", masse: "79,0", formule: "Se",
+        propPhy: "* Photoconducteur (rendu conducteur sous un éclairage)",
+        propChi: "* Dérivés très toxiques",
+        composes: "H<sub>2</sub>Se&nbsp;&nbsp;&nbsp;&nbsp;SeO<sub>2</sub>"
+    },
+
+    // --- ÉLÉMENTS PRÉDITS (Eka) ---
+    {
+        id: "El", nom: "EKA-ALUMINIUM", masse: "~70", formule: "El", 
+        propPhy: "* Métal gris ?<br/>* Bas point de fusion ?", 
+        propChi: " ", 
+        composes: "ElCl<sub>3</sub> ?&nbsp;&nbsp;&nbsp;El<sub>2</sub>O<sub>3</sub> ?&nbsp;&nbsp;&nbsp;ElH<sub>3</sub> ?"
+    },
+    {
+        id: "Es", nom: "EKA-SILICIUM", masse: "~72", formule: "Es", 
+        propPhy: "* Aspect métallique ?<br/>* Point de fusion ~1000°C ?", 
+        propChi: " ", 
+        composes: "EsO<sub>2</sub> ?&nbsp;&nbsp;&nbsp;EsH<sub>4</sub> ?&nbsp;&nbsp;&nbsp;EsCl<sub>4</sub> ?"
     }
 ];
 

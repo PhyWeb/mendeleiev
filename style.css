@@ -71,8 +71,10 @@ h2 { margin: 10px 0; font-size: 1.5rem; }
     flex-direction: column;
     box-shadow: 2px 2px 5px rgba(0,0,0,0.15);
     transition: transform 0.1s;
+    position: relative !important; 
 }
 .element-card:hover { transform: scale(1.1); background-color: #f8f9fa; }
+
 
 .element-mass {
     font-size: 0.55em;      /* Texte beaucoup plus petit pour la masse */
@@ -398,4 +400,67 @@ h2 { margin: 10px 0; font-size: 1.5rem; }
     margin-top: 12px; 
     font-weight: bold;
     font-size: 1.2em;
+}
+
+/* --- Ajouts pour Partie 3_06 (Colonne manquante) --- */
+
+.grid-missing-col {
+    display: grid;
+    /* 8 colonnes : 7 connues + 1 manquante */
+    grid-template-columns: repeat(8, 60px); 
+    gap: 5px;
+    margin: 20px auto;
+    justify-content: center;
+    padding: 15px;
+    background-color: rgba(255, 255, 255, 0.6);
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    width: fit-content;
+}
+
+/* Style spécifique pour la case "?" */
+.element-card.missing {
+    background-color: #e9ecef;
+    border: 2px dashed #adb5bd;
+    color: #868e96;
+    font-size: 1.5rem;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: help;
+    padding: 0; /* Annule le padding flex si nécessaire */
+}
+
+/* --- Ajout pour Partie 3_08 --- */
+.spacer-row1 {
+    grid-column: span 6; /* Prend la place de 6 colonnes */
+}
+
+/* --- Style pour les Inputs de Symboles (Partie 8) --- */
+
+.card-input {
+    width: 40px;          /* Largeur adaptée à la carte */
+    font-size: 1.1rem;    /* Taille de police proche des symboles normaux */
+    font-weight: bold;
+    text-align: center;
+    color: var(--primary-color);
+    
+    /* Esthétique de la boite */
+    border: 1px solid #aaa;
+    border-radius: 4px;
+    background-color: #fcfcfc;
+    
+    /* Positionnement */
+    margin-top: 14px;     /* IMPORTANT : Décale l'input pour laisser la place au Z en haut */
+    padding: 2px 0;
+    font-family: inherit;
+}
+
+/* Effet quand on clique dedans */
+.card-input:focus {
+    border-color: var(--primary-color);
+    background-color: #fff;
+    box-shadow: 0 0 4px rgba(0, 102, 153, 0.3);
+    outline: none;
 }

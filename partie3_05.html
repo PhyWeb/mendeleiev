@@ -8,20 +8,20 @@
     <script src="data.js"></script>
     <script src="game.js"></script>
     <style>
-        /* --- GRILLE --- */
+        /* --- Styles spécifiques à cette grille --- */
         .mini-grid-container {
             display: grid;
-            grid-template-columns: 120px repeat(3, 70px); 
+            grid-template-columns: 140px repeat(3, 70px); 
             gap: 10px;
             margin: 20px auto;
-            justify-content: center;
-            align-items: center;
             padding: 20px;
             background-color: #fff;
             border: 1px solid #ccc;
             border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
             width: fit-content;
+            /* Centre les slots horizontalement dans leurs colonnes */
+            justify-items: center; 
+            align-items: center;
         }
 
         .row-label {
@@ -29,23 +29,26 @@
             color: var(--primary-color);
             padding-right: 15px;
             font-size: 0.95rem;
+            justify-self: end; /* Aligne le texte à droite */
         }
 
         .cards-pool {
             display: flex;
             justify-content: center;
-            align-items: center;
             gap: 15px;
-            padding: 10px;
-            border: 1px dashed transparent;
-        }
-        
-        .cards-pool.drag-over {
-            background-color: rgba(0, 102, 153, 0.05);
-            border-color: var(--primary-color);
+            padding: 15px;
+            min-height: 80px;
+            border: 2px dashed #ccc;
             border-radius: 8px;
+            background-color: rgba(255,255,255,0.5);
+            margin-bottom: 20px;
         }
         
+        /* Feedback visuel (géré via game.js) */
+        .cards-pool.drag-over, .slot.drag-over {
+            background-color: rgba(0, 102, 153, 0.1);
+            border-color: var(--primary-color);
+        }
     </style>
 </head>
 <body>
@@ -57,33 +60,44 @@
     <div class="main-container">
         
         <section class="game-area">
-            
             <div class="question-box intro-text">
                 <p>Dans certains cas, Mendeleiev n'a pas hésité à <strong style="color: #FF0066;">adapter et contourner les règles</strong> qu'il s'était fixées pour construire son tableau.</p>
                 <p>Étudiez par exemple le cas présenté ici de la même façon que Mendeleiev a été amené à le traiter.</p>
                 <p class="consigne" style="font-weight: bold; color: var(--primary-color);">
-                    Vous devez placer dans la cinquième ligne de l'extrait du tableau ci-dessous les trois éléments Sb, I et Te (qui vous sont initialement présentés dans l'ordre croissant de leurs masses atomiques).
+                    Vous devez placer dans la cinquième ligne de l'extrait du tableau ci-dessous les trois éléments Sb, I et Te.
                 </p>
             </div>
 
-            <div class="cards-pool" id="card-pool" ondragover="allowDrop(event)" ondragleave="leaveDrop(event)" ondrop="drop(event)">
-                </div>
+            <div class="cards-pool" id="card-pool" 
+                 ondragover="commonAllowDrop(event); handleDragEnter(event)" 
+                 ondragleave="handleDragLeave(event)" 
+                 ondrop="handleCardDrop(event)">
+            </div>
 
             <div class="mini-grid-container">
-                
                 <div class="row-label">-- 4ème ligne --</div>
-                <div id="slot-As"></div>
-                <div id="slot-Se"></div>
-                <div id="slot-Br"></div>
+                
+                <div class="slot" id="slot-As"></div>
+                <div class="slot" id="slot-Se"></div>
+                <div class="slot" id="slot-Br"></div>
 
                 <div class="row-label">-- 5ème ligne --</div>
                 
-                <div class="element-card placeholder" id="zone-1" ondragover="allowDrop(event)" ondragleave="leaveDrop(event)" ondrop="drop(event)"></div>
-                <div class="element-card placeholder" id="zone-2" ondragover="allowDrop(event)" ondragleave="leaveDrop(event)" ondrop="drop(event)"></div>
-                <div class="element-card placeholder" id="zone-3" ondragover="allowDrop(event)" ondragleave="leaveDrop(event)" ondrop="drop(event)"></div>
-            
+                <div class="slot placeholder" id="zone-1" 
+                     ondragover="commonAllowDrop(event); handleDragEnter(event)" 
+                     ondragleave="handleDragLeave(event)" 
+                     ondrop="handleCardDrop(event)"></div>
+                
+                <div class="slot placeholder" id="zone-2" 
+                     ondragover="commonAllowDrop(event); handleDragEnter(event)" 
+                     ondragleave="handleDragLeave(event)" 
+                     ondrop="handleCardDrop(event)"></div>
+                
+                <div class="slot placeholder" id="zone-3" 
+                     ondragover="commonAllowDrop(event); handleDragEnter(event)" 
+                     ondragleave="handleDragLeave(event)" 
+                     ondrop="handleCardDrop(event)"></div>
             </div>
-
         </section>
 
         <aside class="info-panel">
@@ -111,139 +125,79 @@
 
     <script>
         // --- 1. DONNÉES SPÉCIFIQUES ---
-        const specificElements = [
+        const updates = [
             { id: "Sb", nom: "ANTIMOINE", masse: "121,8", formule: "Sb", propPhy: "* Solide cassant", propChi: "* Dérivés toxiques", composes: "SbH<sub>3</sub>&nbsp;&nbsp;Sb<sub>2</sub>O<sub>5</sub>" },
             { id: "Te", nom: "TELLURE", masse: "127,6", formule: "Te", propPhy: "* Solide cristallin", propChi: "* Brûle dans le dioxygène", composes: "H<sub>2</sub>Te&nbsp;&nbsp;TeO<sub>2</sub>" },
             { id: "I", nom: "IODE", masse: "126,9", formule: "I<sub>2</sub>", propPhy: "* Vapeurs violettes", propChi: "* Réagit avec les métaux", composes: "NaI&nbsp;&nbsp;HI" },
             { id: "Se", nom: "SELENIUM", masse: "79,0", formule: "Se", propPhy: "* Photoconducteur", propChi: "* Dérivés très toxiques", composes: "H<sub>2</sub>Se&nbsp;&nbsp;SeO<sub>2</sub>" }
         ];
-
-        if (typeof elementsData !== 'undefined') {
-            specificElements.forEach(newItem => {
-                const idx = elementsData.findIndex(e => e.id === newItem.id);
-                if(idx !== -1) elementsData[idx] = newItem; 
-                else elementsData.push(newItem);
-            });
-        }
-
-        // --- 2. GESTION DU DRAG & DROP ---
         
-        function allowDrop(ev) {
-            ev.preventDefault();
-            let target = ev.currentTarget;
-            if(target.classList.contains('placeholder') || target.id === 'card-pool') {
-                target.classList.add('drag-over');
-            }
-        }
+        updates.forEach(upd => {
+            const idx = elementsData.findIndex(e => e.id === upd.id);
+            if(idx !== -1) elementsData[idx] = upd;
+            else elementsData.push(upd);
+        });
 
-        function leaveDrop(ev) {
-            ev.currentTarget.classList.remove('drag-over');
-        }
-
-        function drop(ev) {
-            ev.preventDefault();
-            document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
-            
-            const dataId = ev.dataTransfer.getData("text");
-            const draggedCard = document.getElementById(dataId);
-            if (!draggedCard) return;
-
-            const targetZone = ev.currentTarget;
-            
-            // Retour au POOL
-            if (targetZone.id === 'card-pool') {
-                draggedCard.classList.remove('correct', 'incorrect');
-                targetZone.appendChild(draggedCard);
-                return;
-            }
-
-            // Dépôt sur un SLOT (avec Permutation)
-            if (targetZone.classList.contains('placeholder')) {
-                if (targetZone.children.length > 0) {
-                    const existingCard = targetZone.children[0];
-                    if (existingCard === draggedCard) return;
-                    
-                    existingCard.classList.remove('correct', 'incorrect');
-                    document.getElementById('card-pool').appendChild(existingCard);
-                }
-                
-                draggedCard.classList.remove('correct', 'incorrect');
-                targetZone.appendChild(draggedCard);
-            }
-        }
-
-        // --- 3. AFFICHAGE DES ÉLÉMENTS FIXES (Ligne 4) ---
-        function fillStaticSlot(slotId, elemId) {
-            const container = document.getElementById(slotId);
-            const data = elementsData.find(e => e.id === elemId);
-            if(data) {
-                const card = createCard(data, false);
-                card.style.margin = "0"; 
-                container.appendChild(card);
-            }
-        }
-        fillStaticSlot('slot-As', 'As');
-        fillStaticSlot('slot-Se', 'Se');
-        fillStaticSlot('slot-Br', 'Br');
-
-        // --- 4. CARTES JOUABLES ---
-        const elementsToPlay = ["Sb", "I", "Te"]; 
-        const pool = document.getElementById('card-pool');
+        // --- 2. INITIALISATION ---
         
-        elementsToPlay.forEach(id => {
+        // Remplissage des éléments statiques (Ligne 4)
+        ['As', 'Se', 'Br'].forEach(id => {
+            const container = document.getElementById('slot-' + id);
             const data = elementsData.find(e => e.id === id);
-            if(data) {
-                const card = createCard(data, true);
-                card.addEventListener('dragstart', commonDragStart);
-                pool.appendChild(card);
+            if(data && container) {
+                // On crée une carte non-draggable
+                // Elle s'insère DANS le slot (le slot fait le contour gris, la carte le contour bleu)
+                const card = createCard(data, false); 
+                card.style.margin = "0"; // Évite les marges parasites dans la grille
+                container.appendChild(card);
             }
         });
 
-        // --- 5. VÉRIFICATION ---
+        // Création des cartes jouables dans la réserve
+        const pool = document.getElementById('card-pool');
+        ["Sb", "I", "Te"].forEach(id => {
+            const data = elementsData.find(e => e.id === id);
+            if(data) {
+                pool.appendChild(createCard(data, true));
+            }
+        });
+
+        // --- 3. VÉRIFICATION ---
         function verifierReponse() {
             const zone1 = document.getElementById('zone-1');
             const zone2 = document.getElementById('zone-2');
             const zone3 = document.getElementById('zone-3');
             const msgBox = document.getElementById('message-box');
             
-            const allCards = [
-                ...zone1.children, 
-                ...zone2.children, 
-                ...zone3.children, 
-                ...pool.children
-            ];
-            allCards.forEach(c => c.classList.remove('correct', 'incorrect'));
+            // Nettoyage des états visuels précédents
+            document.querySelectorAll('.element-card').forEach(c => c.classList.remove('correct', 'incorrect'));
 
             let bonrep = 0;
-
             const check = (zone, expectedId) => {
-                if(zone.children.length > 0) {
-                    const card = zone.children[0];
-                    if(card.id === expectedId) {
-                        card.classList.add('correct');
-                        return true;
-                    } else {
-                        card.classList.add('incorrect');
-                    }
+                // zone.children[0] correspond à la carte déposée dans le slot
+                if(zone.children.length > 0 && zone.children[0].id === expectedId) {
+                    zone.children[0].classList.add('correct');
+                    return 1;
+                } else if (zone.children.length > 0) {
+                    zone.children[0].classList.add('incorrect');
                 }
-                return false;
+                return 0;
             };
 
-            if(check(zone1, "Sb")) bonrep++; // Sous As
-            if(check(zone2, "Te")) bonrep++; // Sous Se
-            if(check(zone3, "I")) bonrep++;  // Sous Br
+            bonrep += check(zone1, "Sb");
+            bonrep += check(zone2, "Te"); // Inversion volontaire I / Te
+            bonrep += check(zone3, "I");
 
             if (bonrep === 3) {
-                msgBox.innerHTML = "Votre classement est correct. <br/>Vous avez bien remarqué que Mendeleiev n'a pas hésité à inverser deux éléments chimiques en faisant passer le critère \"propriétés similaires\" avant le critère \"masse atomique croissante\".";
+                msgBox.innerHTML = "Correct ! Mendeleiev a inversé Iode et Tellure pour respecter les propriétés chimiques, malgré leurs masses.";
                 msgBox.className = "msg-success";
-                
                 document.getElementById('btn-verif').disabled = true;
                 document.getElementById('btn-suite').style.display = "inline-block";
                 
-                // Figer
+                // On fige le jeu
                 document.querySelectorAll('.element-card').forEach(c => c.draggable = false);
             } else {
-                msgBox.innerHTML = "Votre classement comporte des erreurs (éléments entourés en rouge) <br/>Regardez bien les propriétés des éléments à classer et comparez les aux propriétés des éléments de la quatrième ligne.";
+                msgBox.innerHTML = "Il y a des erreurs. Observez bien les propriétés chimiques (formules des composés) par rapport à la ligne du dessus.";
                 msgBox.className = "msg-error";
             }
         }

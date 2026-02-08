@@ -17,7 +17,7 @@
 
     <div class="main-container">
         <section class="game-area">
-            <div class="card-pool" id="pool" ondrop="drop(event)" ondragover="commonAllowDrop(event)"></div>
+        <div class="card-pool" id="pool" ondrop="handleCardDrop(event)" ondragover="commonAllowDrop(event)"></div>
             <div class="periodic-grid" id="grid"></div>
         </section>
 
@@ -65,27 +65,30 @@
         // Génération grille 4x8 (32 cases)
         for(let i=8; i<32; i++) {
             let slot = document.createElement('div');
-            slot.className = 'slot';
+            slot.className = 'slot'; // La classe 'slot' est maintenant reconnue par game.js
             slot.setAttribute('data-index', i);
-            slot.ondrop = drop; 
+            
+            // UTILISATION DE LA FONCTION CENTRALISÉE
+            slot.ondrop = handleCardDrop; 
             slot.ondragover = commonAllowDrop; 
+            
             grid.appendChild(slot);
         }
 
-        // Remplissage du pool avec game.js
-        elementsData.forEach(el => {
+        // Remplissage initial (Trié)
+        const sortedData = [...elementsData].sort((a, b) => {
+            let mA = parseFloat(a.masse.replace(',', '.').replace('~', ''));
+            let mB = parseFloat(b.masse.replace(',', '.').replace('~', ''));
+            return mA - mB;
+        });
+
+        sortedData.forEach(el => {
             if(el.id === "H") return; 
+            if(!el.famille) return;
             pool.appendChild(createCard(el));
         });
 
-        function drop(ev) {
-            ev.preventDefault();
-            let el = document.getElementById(ev.dataTransfer.getData("text"));
-            if(ev.target.classList.contains('slot')) {
-                 if(ev.target.children.length === 0) ev.target.appendChild(el);
-            } else if (ev.target.id === 'pool') pool.appendChild(el);
-        }
-
+        // La fonction de validation reste locale car spécifique à cet exercice (vérifie data.pos)
         function validerTableau() {
             let errors = 0;
             document.querySelectorAll('.element-card').forEach(card => {
@@ -99,7 +102,7 @@
                         errors++;
                     }
                 } else {
-                    errors++; // Cartes restées dans le pool
+                    errors++; 
                 }
             });
 

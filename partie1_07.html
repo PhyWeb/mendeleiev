@@ -16,7 +16,7 @@
 
     <div class="main-container">
         <section class="game-area">
-            <div class="card-pool" id="pool" ondrop="drop(event)" ondragover="commonAllowDrop(event)" style="min-height:80px;"></div>
+            <div class="card-pool" id="pool" ondrop="handleCardDrop(event)" ondragover="commonAllowDrop(event)" style="min-height:80px;"></div>
             <div class="periodic-grid" id="grid"></div>
         </section>
 
@@ -61,91 +61,83 @@
         const pool = document.getElementById('pool');
         const grid = document.getElementById('grid');
 
-        // Création grille
+        // --- 1. CRÉATION DE LA GRILLE ---
         for(let i=0; i<32; i++) {
             let slot = document.createElement('div');
             slot.className = 'slot';
             slot.setAttribute('data-index', i);
-            slot.ondrop = drop; 
+            
+            // On branche la logique centralisée de game.js
+            slot.ondrop = handleCardDrop; 
             slot.ondragover = commonAllowDrop;
+            
             grid.appendChild(slot);
         }
 
-        // Init
+        // --- 2. INITIALISATION DES CARTES ---
         elementsData.forEach(el => {
             if(el.id === "H") {
-                // Pour l'Hydrogène, on utilise la Factory (il est draggable et interactif)
+                // Pour l'Hydrogène : carte interactive (draggable)
+                // On l'ajoute au pool
                 const hCard = createCard(el, true);
                 pool.appendChild(hCard);
+                
+                // Afficher automatiquement les infos de H au démarrage
+                showInfo("H");
             } else {
-                // Pour les autres, création manuelle "simplifiée" (non interactifs, grisés)
-                let card = document.createElement('div');
-                card.className = 'element-card';
-                card.id = el.id;
+                // Pour les autres éléments : carte statique (non draggable)
+                // createCard(data, isDraggable, options)
+                const card = createCard(el, false);
                 
-                // Conteneur pour le symbole
-                const symboleSpan = document.createElement('span');
-                symboleSpan.textContent = el.id;
-                card.appendChild(symboleSpan);
-                
-                // Ajout de la masse sous le symbole
-                const masseDiv = document.createElement('div');
-                masseDiv.className = 'element-mass';
-                masseDiv.textContent = `m = ${el.masse}`;
-                card.appendChild(masseDiv);
-                
-                // Styles spécifiques "désactivé"
+                // Application du style "désactivé/fixe"
+                // On surcharge les styles de base pour indiquer qu'ils ne bougent pas
                 card.style.backgroundColor = "#eee";
                 card.style.color = "#888";
                 card.style.borderColor = "#ccc";
-                
+                card.style.cursor = "default"; // Curseur normal (pas de main)
+
+                // Placement direct dans la grille à la position définie
                 let slot = grid.querySelector(`.slot[data-index='${el.pos}']`);
                 if(slot) slot.appendChild(card);
             }
         });
 
-        // Afficher automatiquement les infos de H au chargement
-        showInfo("H");
-
-        function drop(ev) {
-            ev.preventDefault();
-            let data = ev.dataTransfer.getData("text");
-            // Seul H est autorisé à bouger sur cette page
-            if(data !== "H") return; 
-            
-            let el = document.getElementById(data);
-            if(ev.target.classList.contains('slot') && ev.target.children.length === 0) {
-                ev.target.appendChild(el);
-            } else if (ev.target.id === 'pool') pool.appendChild(el);
-        }
-
+        // --- 3. VALIDATION (Logique pédagogique conservée) ---
         function validerH() {
             let hCard = document.getElementById("H");
-            if(!hCard) {
-                document.getElementById('message-box').innerHTML = "Erreur : carte H introuvable.";
-                return;
-            }
+            
+            // Sécurité si la carte n'existe pas
+            if(!hCard) return;
             
             let parent = hCard.parentElement;
             let msg = document.getElementById('message-box');
 
+            // Vérification de la position
             if(parent.classList.contains('slot')) {
                 let idx = parseInt(parent.getAttribute('data-index'));
+                
+                // Cas 1 : Correct (Colonne 1)
                 if(idx === 0) {
                     hCard.className = "element-card correct";
                     msg.innerHTML = "Bravo ! H est dans la colonne 1.";
                     msg.className = "msg-success";
                     document.getElementById('btn-fin').style.display = 'inline-block';
-                } else if (idx === 6 || idx === 14) {
+                } 
+                // Cas 2 : Erreur "intelligente" (Colonne 7 - Halogènes)
+                // Les indices 6 et 14 correspondent à la colonne 7 dans cette grille
+                else if (idx === 6 || idx === 14) {
                      hCard.className = "element-card incorrect";
                      msg.innerHTML = "Pas bête (famille 7), mais Mendeleïev a privilégié la masse.";
-                     msg.className = "msg-partial";
-                } else {
+                     msg.className = "msg-partial"; // Style orange/jaune souvent utilisé pour "partiel"
+                } 
+                // Cas 3 : Erreur classique
+                else {
                     hCard.className = "element-card incorrect";
                     msg.innerHTML = "Vous n'avez pas su placer correctement l'élément H. Prenez en compte sa masse atomique et ses propriétés, <strong>principalement</strong> les formules de ses corps composés.";
                     msg.className = "msg-error";
                 }
             } else {
+                // Si la carte est encore dans le pool
                 msg.innerHTML = "Placez l'Hydrogène dans la grille.";
                 msg.className = "msg-error";
             }

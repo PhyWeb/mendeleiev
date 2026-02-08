@@ -8,17 +8,9 @@
     <script src="data.js"></script>
     <script src="game.js"></script>
     <style>
-        /* On retire la grille par défaut du main-container car il n'y a plus de panneau latéral */
-        .main-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-start;
-        }
-
         .game-area {
             width: 100%;
-            max-width: 900px;
+            max-width: 860px;
         }
 
         /* --- CORRECTIF IMPORTANT --- */
@@ -56,106 +48,15 @@
         <div id="message-box"></div>
         <div class="nav-links">
             <a href="partie3_03.html" class="link-simple">&larr; Retour</a>
-            <a href="partie4_05.html" id="btn-suite" class="btn" style="display:none;">Suite</a>
+            <a href="partie3_05.html" id="btn-suite" class="btn" style="display:none;">Suite</a>
         </div>
     </footer>
 
     <script>
-        // --- 1. DONNÉES SPÉCIFIQUES ---
-        const zMap = {
-            "H": 1, "He": 2, 
-            "Li": 3, "Be": 4, "B": 5, "C": 6, "N": 7, "O": 8, "F": 9, "Ne": 10,
-            "Na": 11, "Mg": 12, "Al": 13, "Si": 14, "P": 15, "S": 16, "Cl": 17, "Ar": 18,
-            "K": 19, "Ca": 20, "Sc": 21, "Ti": 22, "V": 23, "Cr": 24, "Mn": 25, "Fe": 26, "Co": 27, "Ni": 28, "Cu": 29, "Zn": 30,
-            "Ga": 31, "Ge": 32, "As": 33, "Se": 34, "Br": 35, "Kr": 36
-        };
-
-        // --- 2. FONCTIONS D'AFFICHAGE ---
-
-        function createCardZ(id) {
-            const zVal = zMap[id] || "?";
-            
-            const div = document.createElement('div');
-            div.className = 'element-card';
-            // Important : position relative est gérée dans le CSS <style>
-
-            const zSpan = document.createElement('span');
-            zSpan.className = 'atomic-number';
-            zSpan.textContent = zVal;
-            div.appendChild(zSpan);
-
-            const symSpan = document.createElement('div');
-            symSpan.className = 'symbol-text';
-            symSpan.textContent = id;
-            div.appendChild(symSpan);
-
-            return div;
-        }
-
-        function createInputCard(id, inputId) {
-            const div = document.createElement('div');
-            div.className = 'element-card input-mode';
-
-            const symSpan = document.createElement('div');
-            symSpan.className = 'input-symbol';
-            symSpan.textContent = id;
-            div.appendChild(symSpan);
-
-            const input = document.createElement('input');
-            input.type = "text";
-            input.id = inputId;
-            input.className = "z-input";
-            input.maxLength = 2;
-            input.autocomplete = "off";
-            input.placeholder = "?"; 
-            
-            div.appendChild(input);
-            return div;
-        }
-
-        // --- 3. GÉNÉRATION DE LA GRILLE ---
         const grid = document.getElementById('grid-container');
 
-        // LIGNE 1
-        grid.appendChild(createCardZ("H"));
-        for(let i=0; i<7; i++) grid.appendChild(document.createElement('div'));
-
-        // LIGNE 2
-        grid.appendChild(createCardZ("Li")); 
-        grid.appendChild(createCardZ("Be"));
-        grid.appendChild(document.createElement('div'));
-        ["B", "C", "N", "O", "F"].forEach(id => grid.appendChild(createCardZ(id)));
-
-        // LIGNE 3
-        grid.appendChild(createCardZ("Na")); 
-        grid.appendChild(createCardZ("Mg"));
-        grid.appendChild(document.createElement('div'));
-        ["Al", "Si", "P", "S", "Cl"].forEach(id => grid.appendChild(createCardZ(id)));
-
-        // LIGNE 4
-        grid.appendChild(createCardZ("K")); 
-        grid.appendChild(createCardZ("Ca"));
-
-        // Bloc Transition
-        const transDiv = document.createElement('div');
-        transDiv.className = 'transition-container';
-        transDiv.appendChild(createCardZ("Ti"));
-        const txt = document.createElement('div');
-        txt.className = 'transition-text';
-        txt.innerHTML = "...<br>6 élém.<br>...";
-        txt.style.fontSize = "0.8rem";
-        txt.style.textAlign = "center";
-        transDiv.appendChild(txt);
-        transDiv.appendChild(createCardZ("Cu"));
-        transDiv.appendChild(createCardZ("Zn"));
-        grid.appendChild(transDiv);
-
-        // Inputs
-        grid.appendChild(createInputCard("Ga", "rep1"));
-        grid.appendChild(createInputCard("Ge", "rep2"));
-
-        // Fin Ligne 4
-        ["As", "Se", "Br"].forEach(id => grid.appendChild(createCardZ(id)));
+        // On appelle la grille avec le nouveau mode 'atomic_input'
+        renderMendeleevGrid(grid, { mode: 'atomic_input' });
 
         // --- 4. VERIFICATION ---
         function verifierReponse() {

@@ -18,7 +18,7 @@
 
     <div class="main-container">
         <section class="game-area">
-            <div class="card-pool" id="pool"></div>
+            <div class="card-pool cards-pool" id="pool"></div>
             <h3 style="margin-bottom: 5px;">Votre classement:</h3>
             <div class="slots-container" id="slots-area"></div>
         </section>
@@ -66,11 +66,13 @@
         const slotsArea = document.getElementById('slots-area');
 
         // --- INITIALISATION SIMPLIFIÉE GRÂCE À GAME.JS ---
-        elementsData.forEach(el => {
-            // On utilise la fonction createCard de game.js
-            const card = createCard(el, true); 
-            pool.appendChild(card);
-        });
+        elementsData
+            .filter(el => el.famille) 
+            .forEach(el => {
+                // On utilise la fonction createCard de game.js
+                const card = createCard(el, true); 
+                pool.appendChild(card);
+            });
 
         // Init Slots (Ça reste spécifique à cette page)
         for (let i = 1; i <= 19; i++) {
