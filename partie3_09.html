@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Le génie de Mendeleïev - Conclusion</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="data.js"></script>
+    <script src="game.js"></script>
+    <style>
+        /* Grille identique à la page 8 : 8 colonnes standard */
+        .mendeleev-grid {
+            display: grid;
+            grid-template-columns: repeat(8, 60px);
+            gap: 5px;
+            margin: 20px auto;
+            padding: 15px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            width: fit-content;
+        }
+
+        /* Espaceur pour la ligne 1 (entre H et He) : s'étend sur 6 colonnes */
+        .spacer-row1 { grid-column: 2 / span 6; }
+        
+        /* Force la carte à être le référentiel pour le positionnement absolu du numéro Z */
+        .element-card {
+            position: relative !important; 
+        }
+
+        /* Style spécifique pour le message de fin */
+        .conclusion-text {
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: var(--primary-color);
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h2>Le génie de Mendeleïev - Conclusion</h2>
+    </header>
+
+    <div class="main-container">
+        
+        <section class="game-area">
+            
+            <div class="question-box conclusion-text">
+                <p>
+                    Le tableau est désormais complet et son étude dans sa version actuelle parallèlement à la version de Mendeleiev est terminée.
+                </p>
+                <p style="font-size: 1rem; font-weight: normal; margin-top:10px; color: #333;">
+                    Vous pouvez retourner à l'accueil du TP et vous consacrer à la quatrième partie (étude des familles chimiques et exercices sur l'utilisation du tableau périodique).
+                </p>
+            </div>
+
+            <div class="mendeleev-grid" id="grid-container">
+                
+                <div id="card-H"></div>
+                <div class="spacer-row1"></div>
+                <div id="card-He"></div>
+
+                <div id="card-Li"></div>
+                <div id="card-Be"></div>
+                <div id="card-B"></div>
+                <div id="card-C"></div>
+                <div id="card-N"></div>
+                <div id="card-O"></div>
+                <div id="card-F"></div>
+                <div id="card-Ne"></div>
+
+                <div id="card-Na"></div>
+                <div id="card-Mg"></div>
+                <div id="card-Al"></div>
+                <div id="card-Si"></div>
+                <div id="card-P"></div>
+                <div id="card-S"></div>
+                <div id="card-Cl"></div>
+                <div id="card-Ar"></div>
+
+                </div>
+
+        </section>
+
+        <aside class="info-panel">
+            <div class="info-header">
+                <div id="info-symbole">--</div>
+                <div id="info-nom">Survolez un élément</div>
+            </div>
+            <div class="info-item"><span class="info-label">Masse atomique (H=1)</span><span id="info-masse" class="info-value"></span></div>
+            <div class="info-item"><span class="info-label">Formule corps simple</span><span id="info-formule" class="info-value"></span></div>
+            <div class="info-item"><span class="info-label">Propriétés Physiques</span><span id="info-propPhy" class="info-value"></span></div>
+            <div class="info-item"><span class="info-label">Propriétés Chimiques</span><span id="info-propChi" class="info-value"></span></div>
+            <div class="info-item"><span class="info-label">Composés</span><span id="info-composes" class="info-value"></span></div>
+        </aside>
+
+    </div>
+
+    <footer class="controls">
+        <div class="nav-links" style="width: 100%; justify-content: center;">
+            <a href="index.html" class="btn">Retour à l'accueil "Etude du tableau périodique"</a>
+        </div>
+    </footer>
+
+    <script>
+        // --- 1. DONNÉES Z COMPLÈTES (Mapping ID -> Z) ---
+        // Limité aux 3 premières périodes (jusqu'à Argon Z=18)
+        const zMap = {
+            "H": 1, "He": 2,
+            "Li": 3, "Be": 4, "B": 5, "C": 6, "N": 7, "O": 8, "F": 9, "Ne": 10,
+            "Na": 11, "Mg": 12, "Al": 13, "Si": 14, "P": 15, "S": 16, "Cl": 17, "Ar": 18
+        };
+
+        // --- 2. CRÉATION DES CARTES ---
+        function createCardZ(id) {
+            const zVal = zMap[id] || "";
+            
+            const div = document.createElement('div');
+            div.className = 'element-card';
+            
+            // Numéro atomique Z
+            const zSpan = document.createElement('span');
+            zSpan.className = 'atomic-number';
+            zSpan.textContent = zVal;
+            div.appendChild(zSpan);
+
+            // Symbole
+            const symSpan = document.createElement('div');
+            symSpan.className = 'symbol-text';
+            symSpan.textContent = id;
+            div.appendChild(symSpan);
+
+            // Interaction Tooltip via game.js
+            div.onmouseover = () => showInfo(id);
+            div.onmouseout = clearInfo;
+
+            return div;
+        }
+
+        // --- 3. GÉNÉRATION AUTOMATIQUE ---
+        // On remplit les slots existants dans le HTML
+        Object.keys(zMap).forEach(id => {
+            const container = document.getElementById(`card-${id}`);
+            if (container) {
+                container.appendChild(createCardZ(id));
+            }
+        });
+    </script>
+</body>
+</html>

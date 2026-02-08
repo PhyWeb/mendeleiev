@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Le génie de Mendeleïev - page 8</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="data.js"></script>
+    <script src="game.js"></script>
+    <style>
+        /* --- CHANGEMENT 1 : Grille continue sans trou --- */
+        .mendeleev-grid {
+            display: grid;
+            /* 8 colonnes de taille égale (60px) */
+            grid-template-columns: repeat(8, 60px);
+            gap: 5px;
+            margin: 20px auto;
+            padding: 15px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            width: fit-content;
+        }
+
+        /* Espace entre H et He : s'étend maintenant sur 6 colonnes */
+        .spacer-row1 { grid-column: 2 / span 6; }
+        
+        /* Force la carte à être le référentiel pour le positionnement absolu du numéro Z */
+        .element-card {
+            position: relative !important; 
+        }
+
+        /* --- CHANGEMENT 2 : Nouveau style des inputs --- */
+        
+        /* Le conteneur de l'input (la carte elle-même) */
+        .element-card.input-mode {
+            background-color: #f8f9fa; /* Fond légèrement différent pour indiquer une zone interactive */
+            border: 2px dashed #bbb;   /* Bordure pointillée pour signifier "à remplir" */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        /* Quand on clique dans l'input */
+        .element-card.input-mode:focus-within {
+            border-color: var(--primary-color);
+            background-color: #fff;
+            box-shadow: 0 0 5px rgba(var(--primary-rgb), 0.3);
+            border-style: solid;
+        }
+
+        /* Le champ de saisie lui-même */
+        .input-symbol {
+            width: 100%;
+            height: 100%;
+            font-size: 1.4rem;
+            font-weight: bold;
+            text-align: center;
+            border: none; /* Pas de bordure sur l'input, c'est le conteneur qui l'a */
+            background: transparent;
+            color: var(--primary-color);
+            outline: none;
+            text-transform: capitalize;
+            padding-top: 15px; /* Espace pour le numéro atomique Z */
+        }
+
+        /* Ajustement pour que le Z ne gêne pas la saisie */
+        .input-mode .atomic-number {
+            z-index: 2; /* Au-dessus de l'input */
+            pointer-events: none; /* Laisse passer le clic vers l'input */
+        }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <h2>Le génie de Mendeleïev - Les gaz nobles (suite)</h2>
+    </header>
+
+    <div class="main-container">
+        
+        <section class="game-area">
+            
+            <div class="question-box intro-text">
+                <p>
+                    Il ne vous reste plus qu'à ajouter au tableau les <strong style="color: #FF0066;">symboles chimiques</strong> des gaz rares avant de valider.
+                </p>
+                <p class="consigne" style="font-size: 0.9em; margin-top: 5px;">
+                    (Ils ont pour noms, dans l'ordre : <strong style="color: var(--primary-color);">hélium, néon, argon</strong>).
+                </p>
+            </div>
+
+            <div class="mendeleev-grid" id="grid-container">
+                
+                <div id="card-H"></div>
+                <div class="spacer-row1"></div>
+                <div class="element-card input-mode">
+                    <span class="atomic-number">2</span>
+                    <input type="text" id="rep1" class="input-symbol" maxlength="2" autocomplete="off">
+                </div>
+
+                <div id="card-Li"></div>
+                <div id="card-Be"></div>
+                <div id="card-B"></div>
+                <div id="card-C"></div>
+                <div id="card-N"></div>
+                <div id="card-O"></div>
+                <div id="card-F"></div>
+                <div class="element-card input-mode">
+                    <span class="atomic-number">10</span>
+                    <input type="text" id="rep2" class="input-symbol" maxlength="2" autocomplete="off">
+                </div>
+
+                <div id="card-Na"></div>
+                <div id="card-Mg"></div>
+                <div id="card-Al"></div>
+                <div id="card-Si"></div>
+                <div id="card-P"></div>
+                <div id="card-S"></div>
+                <div id="card-Cl"></div>
+                <div class="element-card input-mode">
+                    <span class="atomic-number">18</span>
+                    <input type="text" id="rep3" class="input-symbol" maxlength="2" autocomplete="off">
+                </div>
+
+            </div>
+
+        </section>
+
+        <aside class="info-panel">
+            <div class="info-header">
+                <div id="info-symbole">--</div>
+                <div id="info-nom">Survolez un élément</div>
+            </div>
+            <div class="info-item"><span class="info-label">Masse atomique (H=1)</span><span id="info-masse" class="info-value"></span></div>
+            <div class="info-item"><span class="info-label">Formule corps simple</span><span id="info-formule" class="info-value"></span></div>
+            <div class="info-item"><span class="info-label">Propriétés Physiques</span><span id="info-propPhy" class="info-value"></span></div>
+            <div class="info-item"><span class="info-label">Propriétés Chimiques</span><span id="info-propChi" class="info-value"></span></div>
+            <div class="info-item"><span class="info-label">Composés</span><span id="info-composes" class="info-value"></span></div>
+        </aside>
+
+    </div>
+
+    <footer class="controls">
+        <button class="btn" id="btn-verif" onclick="verifierReponse()">Valider</button>
+        <div id="message-box"></div>
+        <div class="nav-links">
+            <a href="partie3_07.html" class="link-simple">&larr; Retour</a>
+            <a href="partie3_09.html" id="btn-suite" class="btn" style="display:none;">Suite &rarr;</a>
+        </div>
+    </footer>
+
+    <script>
+        // --- 1. DONNÉES Z LOCALE (Mapping ID -> Z) ---
+        const zMap = {
+            "H": 1,
+            "Li": 3, "Be": 4, "B": 5, "C": 6, "N": 7, "O": 8, "F": 9,
+            "Na": 11, "Mg": 12, "Al": 13, "Si": 14, "P": 15, "S": 16, "Cl": 17
+        };
+
+        // --- 2. CRÉATION DES CARTES FIXES ---
+        function createStaticCard(id) {
+            const zVal = zMap[id] || "";
+            const div = document.createElement('div');
+            div.className = 'element-card';
+            
+            const zSpan = document.createElement('span');
+            zSpan.className = 'atomic-number';
+            zSpan.textContent = zVal;
+            div.appendChild(zSpan);
+
+            const symSpan = document.createElement('div');
+            symSpan.className = 'symbol-text';
+            symSpan.textContent = id;
+            div.appendChild(symSpan);
+
+            div.onmouseover = () => showInfo(id);
+            div.onmouseout = clearInfo;
+            return div;
+        }
+
+        Object.keys(zMap).forEach(id => {
+            const container = document.getElementById(`card-${id}`);
+            if (container) {
+                container.appendChild(createStaticCard(id));
+            }
+        });
+
+        // --- 3. VÉRIFICATION ---
+        function verifierReponse() {
+            const rep1 = document.getElementById('rep1').value.trim();
+            const rep2 = document.getElementById('rep2').value.trim();
+            const rep3 = document.getElementById('rep3').value.trim();
+            
+            const reponses = [rep1, rep2, rep3];
+            const solutions = ["He", "Ne", "Ar"];
+            let testrep = 0;
+
+            for(let i=0; i<3; i++) {
+                const inputEl = document.getElementById(`rep${i+1}`);
+                // On cible le parent (.element-card.input-mode) pour le style de validation
+                const cardParent = inputEl.parentElement; 
+
+                if(reponses[i] === solutions[i]) {
+                    testrep++;
+                    cardParent.classList.add('correct');
+                    cardParent.classList.remove('incorrect');
+                    // On enlève le style dashed/focus pour figer le résultat vert
+                    cardParent.style.borderStyle = "solid";
+                } else {
+                    cardParent.classList.add('incorrect');
+                    cardParent.classList.remove('correct');
+                     cardParent.style.borderStyle = "solid";
+                }
+            }
+
+            const err = 3 - testrep;
+            const msgBox = document.getElementById('message-box');
+            const btnSuite = document.getElementById('btn-suite');
+
+            if (testrep === 3) {
+                msgBox.innerHTML = "Bien. Ce sont les bons symboles pour l'hélium, le néon et l'argon. <br/>Vous pouvez passer à la conclusion du TP.";
+                msgBox.className = "msg-success";
+                document.getElementById('btn-verif').disabled = true;
+                for(let i=1; i<=3; i++) document.getElementById(`rep${i}`).disabled = true;
+                btnSuite.style.display = "inline-block";
+            } else {
+                msgBox.innerHTML = "Non ! Vous avez commis " + err + " erreur(s)<br/>Respectez les majuscules / minuscules.";
+                msgBox.className = "msg-error";
+            }
+        }
+    </script>
+</body>
+</html>
