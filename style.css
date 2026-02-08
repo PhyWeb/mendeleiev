@@ -251,7 +251,7 @@ h2 { margin: 10px 0; font-size: 1.5rem; }
 .consigne {
     font-weight: normal;
     color: #666;
-    font-size: 0.9em;
+    font-size: 1em;
     font-style: italic;
 }
 
@@ -398,9 +398,4 @@ h2 { margin: 10px 0; font-size: 1.5rem; }
     margin-top: 12px; 
     font-weight: bold;
     font-size: 1.2em;
-}
-
-.question-box {
-    max-width: 800px;
-    margin: 0 auto 20px auto;
 }

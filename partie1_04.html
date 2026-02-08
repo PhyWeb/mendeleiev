@@ -63,6 +63,8 @@
         const testBox = document.getElementById('test-box');
         const foundZone = document.getElementById('found-zone');
         let familiesFoundCount = 0;
+        const foundFamilies = new Set();
+        const totalFamilies = Object.keys(FAMILLES).length;
 
         // Génération des cartes via game.js en suivant l'ordre de masse
         ORDRE_MASSE.forEach(id => {
@@ -112,9 +114,20 @@
                     msg.innerHTML = "Famille complète trouvée !"; 
                     msg.className = "msg-success"; 
                     testBox.style.borderColor = "#00AA55";
-                    archiverFamille(children);
-                    familiesFoundCount++;
-                    if(familiesFoundCount >= 1) document.getElementById('btn-suite').style.display = 'inline-block';
+                        archiverFamille(children);
+                        const famId = firstEl.famille;
+                        if (!foundFamilies.has(famId)) {
+                            foundFamilies.add(famId);
+                            familiesFoundCount = foundFamilies.size;
+                        }
+                        if (familiesFoundCount >= totalFamilies) {
+                            document.getElementById('btn-suite').style.display = 'inline-block';
+                            msg.textContent = "Toutes les familles ont été trouvées ! Vous pouvez passer à la suite.";
+                            msg.className = "msg-success";
+                        } else {
+                            msg.innerHTML = `Famille complète trouvée&nbsp;! (${familiesFoundCount}/${totalFamilies})`;
+                            msg.className = "msg-success";
+                        }
                 } 
                 // --- NOUVEAU MESSAGE SPÉCIAL ICI ---
                 else if (currentIds.length >= 2 && targetFam.length - currentIds.length === 1) {
