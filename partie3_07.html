@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Le génie de Mendeleïev - page 7</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="data.js"></script>
+    <script src="game.js"></script>
+    <style>
+        .mendeleev-grid {
+            display: grid;
+            grid-template-columns: repeat(8, 60px);
+            gap: 5px;
+            margin: 20px auto;
+            padding: 15px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            width: fit-content;
+        }
+
+        /* Espacement pour la première ligne (H ... He) */
+        .gap-6 { grid-column: span 6; }
+
+        /* Force la carte à être le référentiel pour le positionnement absolu du numéro Z */
+        .element-card {
+            position: relative !important; 
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h2>Le génie de Mendeleïev - La continuité</h2>
+    </header>
+
+    <div class="main-container">
+        
+        <section class="game-area">
+            
+            <div class="question-box intro-text">
+                <p class="consigne" style="font-size: 1.1em; text-align: center;">
+                    Indiquez dans le tableau ci-dessous les <strong style="color: #FF0066;">numéros atomiques</strong> des gaz rares.
+                </p>
+            </div>
+
+            <div class="mendeleev-grid" id="grid-container">
+                <div id="card-H"></div>
+                <div class="gap-6"></div>
+                <div class="element-card input-mode">
+                    <div class="input-symbol">?</div>
+                    <input type="text" id="rep1" class="z-input" maxlength="2" autocomplete="off">
+                </div>
+
+                <div id="card-Li"></div>
+                <div id="card-Be"></div>
+                <div id="card-B"></div>
+                <div id="card-C"></div>
+                <div id="card-N"></div>
+                <div id="card-O"></div>
+                <div id="card-F"></div>
+                <div class="element-card input-mode">
+                    <div class="input-symbol">?</div>
+                    <input type="text" id="rep2" class="z-input" maxlength="2" autocomplete="off">
+                </div>
+
+                <div id="card-Na"></div>
+                <div id="card-Mg"></div>
+                <div id="card-Al"></div>
+                <div id="card-Si"></div>
+                <div id="card-P"></div>
+                <div id="card-S"></div>
+                <div id="card-Cl"></div>
+                <div class="element-card input-mode">
+                    <div class="input-symbol">?</div>
+                    <input type="text" id="rep3" class="z-input" maxlength="2" autocomplete="off">
+                </div>
+            </div>
+
+        </section>
+
+        <aside class="info-panel">
+            <div class="info-header">
+                <div id="info-symbole">--</div>
+                <div id="info-nom">Survolez un élément</div>
+            </div>
+            <div class="info-item"><span class="info-label">Masse atomique (H=1)</span><span id="info-masse" class="info-value"></span></div>
+            <div class="info-item"><span class="info-label">Formule corps simple</span><span id="info-formule" class="info-value"></span></div>
+            <div class="info-item"><span class="info-label">Propriétés Physiques</span><span id="info-propPhy" class="info-value"></span></div>
+            <div class="info-item"><span class="info-label">Propriétés Chimiques</span><span id="info-propChi" class="info-value"></span></div>
+            <div class="info-item"><span class="info-label">Composés</span><span id="info-composes" class="info-value"></span></div>
+        </aside>
+
+    </div>
+
+    <footer class="controls">
+        <button class="btn" id="btn-verif" onclick="verifierReponse()">Valider</button>
+        <div id="message-box"></div>
+        <div class="nav-links">
+            <a href="partie3_06.html" class="link-simple">&larr; Retour</a>
+            <a href="partie3_08.html" id="btn-suite" class="btn" style="display:none;">Suite</a>
+        </div>
+    </footer>
+
+    <script>
+        // --- 1. DONNÉES Z (Numéros Atomiques) ---
+        const zMap = {
+            "H": 1,
+            "Li": 3, "Be": 4, "B": 5, "C": 6, "N": 7, "O": 8, "F": 9,
+            "Na": 11, "Mg": 12, "Al": 13, "Si": 14, "P": 15, "S": 16, "Cl": 17
+        };
+
+        // --- 2. FONCTION DE CRÉATION DE CARTE AVEC Z ---
+        function createCardZ(id) {
+            const zVal = zMap[id] || "?";
+            
+            const div = document.createElement('div');
+            div.className = 'element-card';
+            
+            // Numéro atomique en haut à gauche
+            const zSpan = document.createElement('span');
+            zSpan.className = 'atomic-number';
+            zSpan.textContent = zVal;
+            div.appendChild(zSpan);
+
+            // Symbole au centre
+            const symSpan = document.createElement('div');
+            symSpan.className = 'symbol-text';
+            symSpan.textContent = id;
+            div.appendChild(symSpan);
+
+            // Gestion des infos au survol
+            div.onmouseover = () => showInfo(id);
+            div.onmouseout = clearInfo;
+
+            return div;
+        }
+
+        // --- 3. GÉNÉRATION DE LA GRILLE ---
+        Object.keys(zMap).forEach(id => {
+            const container = document.getElementById(`card-${id}`);
+            if (container) {
+                const card = createCardZ(id);
+                container.appendChild(card);
+            }
+        });
+
+        // --- 4. VÉRIFICATION ---
+        function verifierReponse() {
+            const rep1 = document.getElementById('rep1').value.trim();
+            const rep2 = document.getElementById('rep2').value.trim();
+            const rep3 = document.getElementById('rep3').value.trim();
+            
+            const reponses = [rep1, rep2, rep3];
+            const solutions = ["2", "10", "18"];
+            
+            let testrep = 0;
+
+            for(let i=0; i<3; i++) {
+                const input = document.getElementById(`rep${i+1}`);
+                if(reponses[i] === solutions[i]) {
+                    testrep++;
+                    input.style.backgroundColor = "#d4edda"; // Vert clair
+                    input.style.borderColor = "#28a745";
+                } else {
+                    input.style.backgroundColor = "#f8d7da"; // Rouge clair
+                    input.style.borderColor = "#dc3545";
+                }
+            }
+
+            const err = 3 - testrep;
+            const msgBox = document.getElementById('message-box');
+            const btnSuite = document.getElementById('btn-suite');
+
+            if (testrep === 3) {
+                msgBox.innerHTML = "Bien. Mais cela devient facile à ce stade de l'étude du tableau ! Et vous pouvez remarquer que la continuité des numéros atomiques est désormais parfaite. <br/>Vous pouvez passer à la suite.";
+                msgBox.className = "msg-success";
+                
+                document.getElementById('btn-verif').disabled = true;
+                // Désactivation des champs
+                for(let i=1; i<=3; i++) document.getElementById(`rep${i}`).disabled = true;
+                
+                btnSuite.style.display = "inline-block";
+            } else {
+                msgBox.innerHTML = "Non ! Vous avez commis " + err + " erreur(s)<br/>Rappelez-vous le critère actuel de classement des éléments le long des lignes...";
+                msgBox.className = "msg-error";
+            }
+        }
+    </script>
+</body>
+</html>

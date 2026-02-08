@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Le génie de Mendeleïev - page 5</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="data.js"></script>
+    <script src="game.js"></script>
+    <style>
+        /* --- GRILLE --- */
+        .mini-grid-container {
+            display: grid;
+            grid-template-columns: 120px repeat(3, 70px); 
+            gap: 10px;
+            margin: 20px auto;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            width: fit-content;
+        }
+
+        .row-label {
+            font-weight: bold;
+            color: var(--primary-color);
+            padding-right: 15px;
+            font-size: 0.95rem;
+        }
+
+        .cards-pool {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            padding: 10px;
+            border: 1px dashed transparent;
+        }
+        
+        .cards-pool.drag-over {
+            background-color: rgba(0, 102, 153, 0.05);
+            border-color: var(--primary-color);
+            border-radius: 8px;
+        }
+        
+    </style>
+</head>
+<body>
+
+    <header>
+        <h2>Le génie de Mendeleïev - Exceptions aux règles</h2>
+    </header>
+
+    <div class="main-container">
+        
+        <section class="game-area">
+            
+            <div class="question-box intro-text">
+                <p>Dans certains cas, Mendeleiev n'a pas hésité à <strong style="color: #FF0066;">adapter et contourner les règles</strong> qu'il s'était fixées pour construire son tableau.</p>
+                <p>Étudiez par exemple le cas présenté ici de la même façon que Mendeleiev a été amené à le traiter.</p>
+                <p class="consigne" style="font-weight: bold; color: var(--primary-color);">
+                    Vous devez placer dans la cinquième ligne de l'extrait du tableau ci-dessous les trois éléments Sb, I et Te (qui vous sont initialement présentés dans l'ordre croissant de leurs masses atomiques).
+                </p>
+            </div>
+
+            <div class="cards-pool" id="card-pool" ondragover="allowDrop(event)" ondragleave="leaveDrop(event)" ondrop="drop(event)">
+                </div>
+
+            <div class="mini-grid-container">
+                
+                <div class="row-label">-- 4ème ligne --</div>
+                <div id="slot-As"></div>
+                <div id="slot-Se"></div>
+                <div id="slot-Br"></div>
+
+                <div class="row-label">-- 5ème ligne --</div>
+                
+                <div class="element-card placeholder" id="zone-1" ondragover="allowDrop(event)" ondragleave="leaveDrop(event)" ondrop="drop(event)"></div>
+                <div class="element-card placeholder" id="zone-2" ondragover="allowDrop(event)" ondragleave="leaveDrop(event)" ondrop="drop(event)"></div>
+                <div class="element-card placeholder" id="zone-3" ondragover="allowDrop(event)" ondragleave="leaveDrop(event)" ondrop="drop(event)"></div>
+            
+            </div>
+
+        </section>
+
+        <aside class="info-panel">
+            <div class="info-header">
+                <div id="info-symbole">--</div>
+                <div id="info-nom">Survolez un élément</div>
+            </div>
+            <div class="info-item"><span class="info-label">Masse atomique (H=1)</span><span id="info-masse" class="info-value"></span></div>
+            <div class="info-item"><span class="info-label">Formule corps simple</span><span id="info-formule" class="info-value"></span></div>
+            <div class="info-item"><span class="info-label">Propriétés Physiques</span><span id="info-propPhy" class="info-value"></span></div>
+            <div class="info-item"><span class="info-label">Propriétés Chimiques</span><span id="info-propChi" class="info-value"></span></div>
+            <div class="info-item"><span class="info-label">Composés</span><span id="info-composes" class="info-value"></span></div>
+        </aside>
+
+    </div>
+
+    <footer class="controls">
+        <button class="btn" id="btn-verif" onclick="verifierReponse()">Valider</button>
+        <div id="message-box"></div>
+        <div class="nav-links">
+            <a href="partie3_04.html" class="link-simple">&larr; Retour</a>
+            <a href="partie3_06.html" id="btn-suite" class="btn" style="display:none;">Suite</a>
+        </div>
+    </footer>
+
+    <script>
+        // --- 1. DONNÉES SPÉCIFIQUES ---
+        const specificElements = [
+            { id: "Sb", nom: "ANTIMOINE", masse: "121,8", formule: "Sb", propPhy: "* Solide cassant", propChi: "* Dérivés toxiques", composes: "SbH<sub>3</sub>&nbsp;&nbsp;Sb<sub>2</sub>O<sub>5</sub>" },
+            { id: "Te", nom: "TELLURE", masse: "127,6", formule: "Te", propPhy: "* Solide cristallin", propChi: "* Brûle dans le dioxygène", composes: "H<sub>2</sub>Te&nbsp;&nbsp;TeO<sub>2</sub>" },
+            { id: "I", nom: "IODE", masse: "126,9", formule: "I<sub>2</sub>", propPhy: "* Vapeurs violettes", propChi: "* Réagit avec les métaux", composes: "NaI&nbsp;&nbsp;HI" },
+            { id: "Se", nom: "SELENIUM", masse: "79,0", formule: "Se", propPhy: "* Photoconducteur", propChi: "* Dérivés très toxiques", composes: "H<sub>2</sub>Se&nbsp;&nbsp;SeO<sub>2</sub>" }
+        ];
+
+        if (typeof elementsData !== 'undefined') {
+            specificElements.forEach(newItem => {
+                const idx = elementsData.findIndex(e => e.id === newItem.id);
+                if(idx !== -1) elementsData[idx] = newItem; 
+                else elementsData.push(newItem);
+            });
+        }
+
+        // --- 2. GESTION DU DRAG & DROP ---
+        
+        function allowDrop(ev) {
+            ev.preventDefault();
+            let target = ev.currentTarget;
+            if(target.classList.contains('placeholder') || target.id === 'card-pool') {
+                target.classList.add('drag-over');
+            }
+        }
+
+        function leaveDrop(ev) {
+            ev.currentTarget.classList.remove('drag-over');
+        }
+
+        function drop(ev) {
+            ev.preventDefault();
+            document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
+            
+            const dataId = ev.dataTransfer.getData("text");
+            const draggedCard = document.getElementById(dataId);
+            if (!draggedCard) return;
+
+            const targetZone = ev.currentTarget;
+            
+            // Retour au POOL
+            if (targetZone.id === 'card-pool') {
+                draggedCard.classList.remove('correct', 'incorrect');
+                targetZone.appendChild(draggedCard);
+                return;
+            }
+
+            // Dépôt sur un SLOT (avec Permutation)
+            if (targetZone.classList.contains('placeholder')) {
+                if (targetZone.children.length > 0) {
+                    const existingCard = targetZone.children[0];
+                    if (existingCard === draggedCard) return;
+                    
+                    existingCard.classList.remove('correct', 'incorrect');
+                    document.getElementById('card-pool').appendChild(existingCard);
+                }
+                
+                draggedCard.classList.remove('correct', 'incorrect');
+                targetZone.appendChild(draggedCard);
+            }
+        }
+
+        // --- 3. AFFICHAGE DES ÉLÉMENTS FIXES (Ligne 4) ---
+        function fillStaticSlot(slotId, elemId) {
+            const container = document.getElementById(slotId);
+            const data = elementsData.find(e => e.id === elemId);
+            if(data) {
+                const card = createCard(data, false);
+                card.style.margin = "0"; 
+                container.appendChild(card);
+            }
+        }
+        fillStaticSlot('slot-As', 'As');
+        fillStaticSlot('slot-Se', 'Se');
+        fillStaticSlot('slot-Br', 'Br');
+
+        // --- 4. CARTES JOUABLES ---
+        const elementsToPlay = ["Sb", "I", "Te"]; 
+        const pool = document.getElementById('card-pool');
+        
+        elementsToPlay.forEach(id => {
+            const data = elementsData.find(e => e.id === id);
+            if(data) {
+                const card = createCard(data, true);
+                card.addEventListener('dragstart', commonDragStart);
+                pool.appendChild(card);
+            }
+        });
+
+        // --- 5. VÉRIFICATION ---
+        function verifierReponse() {
+            const zone1 = document.getElementById('zone-1');
+            const zone2 = document.getElementById('zone-2');
+            const zone3 = document.getElementById('zone-3');
+            const msgBox = document.getElementById('message-box');
+            
+            const allCards = [
+                ...zone1.children, 
+                ...zone2.children, 
+                ...zone3.children, 
+                ...pool.children
+            ];
+            allCards.forEach(c => c.classList.remove('correct', 'incorrect'));
+
+            let bonrep = 0;
+
+            const check = (zone, expectedId) => {
+                if(zone.children.length > 0) {
+                    const card = zone.children[0];
+                    if(card.id === expectedId) {
+                        card.classList.add('correct');
+                        return true;
+                    } else {
+                        card.classList.add('incorrect');
+                    }
+                }
+                return false;
+            };
+
+            if(check(zone1, "Sb")) bonrep++; // Sous As
+            if(check(zone2, "Te")) bonrep++; // Sous Se
+            if(check(zone3, "I")) bonrep++;  // Sous Br
+
+            if (bonrep === 3) {
+                msgBox.innerHTML = "Votre classement est correct. <br/>Vous avez bien remarqué que Mendeleiev n'a pas hésité à inverser deux éléments chimiques en faisant passer le critère \"propriétés similaires\" avant le critère \"masse atomique croissante\".";
+                msgBox.className = "msg-success";
+                
+                document.getElementById('btn-verif').disabled = true;
+                document.getElementById('btn-suite').style.display = "inline-block";
+                
+                // Figer
+                document.querySelectorAll('.element-card').forEach(c => c.draggable = false);
+            } else {
+                msgBox.innerHTML = "Votre classement comporte des erreurs (éléments entourés en rouge) <br/>Regardez bien les propriétés des éléments à classer et comparez les aux propriétés des éléments de la quatrième ligne.";
+                msgBox.className = "msg-error";
+            }
+        }
+    </script>
+</body>
+</html>

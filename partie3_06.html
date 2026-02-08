@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Le génie de Mendeleïev - page 6</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="data.js"></script>
+    <script src="game.js"></script>
+    <style>
+        /* Styles spécifiques pour le tableau de cette page */
+        .grid-missing-col {
+            display: grid;
+            /* 18 colonnes standard pour garder la structure */
+            grid-template-columns: repeat(18, var(--card-size, 60px));
+            gap: 5px;
+            margin: 20px auto;
+            justify-content: center;
+            padding: 10px;
+            overflow-x: auto;
+            background-color: rgba(255, 255, 255, 0.5);
+            border-radius: 8px;
+            width: fit-content;
+        }
+
+        /* Style pour la colonne manquante (Gaz Rares) */
+        .element-card.missing {
+            background-color: #e0e0e0;
+            border: 2px dashed #999;
+            color: #666;
+            font-size: 1.5rem;
+            font-weight: bold;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: help;
+        }
+
+        /* Container pour le texte des éléments de transition manquants */
+        .transition-gap {
+            grid-column: span 10;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            font-size: 0.8rem;
+            color: #666;
+            background-color: #f0f0f0;
+            border-radius: 4px;
+            padding: 5px;
+        }
+        
+        /* Style du QCM */
+        .quiz-container {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .radio-option {
+            display: block;
+            margin: 10px 0;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+        }
+        .radio-option:hover {
+            background-color: #f5f9fc;
+        }
+        .radio-option input {
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h2>Le génie de Mendeleïev - La colonne manquante</h2>
+    </header>
+
+    <div class="main-container">
+        
+        <section class="game-area">
+            
+            <div class="question-box intro-text">
+                <p>Pour terminer, il reste à constater que dans le tableau de Mendeleiev, <strong style="color: #FF0066;">la dernière colonne</strong> (celle des éléments aujourd'hui dénommés "gaz rares") <strong style="color: #FF0066;">était manquante.</strong></p>
+                <p class="consigne" style="font-weight: bold; color: var(--primary-color);">Pour quelle raison en était-il ainsi ?</p>
+                <label class="radio-option">
+                    <input type="radio" name="q1" value="a">
+                    Ces gaz étant rares, ils n'avaient pu être découverts
+                </label>
+                <label class="radio-option">
+                    <input type="radio" name="q1" value="b">
+                    Mendeleiev ne les a pas placés dans son tableau car il ne leur trouvait aucun intérêt
+                </label>
+                <label class="radio-option">
+                    <input type="radio" name="q1" value="c">
+                    Son tableau ne pouvait pas dépasser une certaine largeur
+                </label>
+                <label class="radio-option">
+                    <input type="radio" name="q1" value="d">
+                    Les gaz rares étant chimiquement inertes (leurs atomes satisfaisant les règles du duet et de l'octet, ils sont stables), ils n'ont pas de propriétés chimiques et ne pouvaient donc pas être découverts comme les autres éléments l'avaient été
+                </label>
+                <label class="radio-option">
+                    <input type="radio" name="q1" value="e">
+                    Les gaz rares n'existaient pas encore à l'époque de Mendeleiev
+                </label>
+            </div>
+
+            <div class="grid-missing-col" id="grid-container">
+            </div>
+        </section>
+
+    </div>
+
+    <footer class="controls">
+        <button class="btn" id="btn-verif" onclick="verifierReponse()">Valider</button>
+        <div id="message-box"></div>
+        <div class="nav-links">
+            <a href="partie3_05.html" class="link-simple">&larr; Retour</a>
+            <a href="partie3_07.html" id="btn-suite" class="btn" style="display:none;">Suite</a>
+        </div>
+    </footer>
+
+    <script>
+        // --- 1. FONCTIONS D'AFFICHAGE ---
+        
+        // Création d'une carte standard (non draggable)
+        function addCard(container, id) {
+            const data = (typeof elementsData !== 'undefined') ? elementsData.find(e => e.id === id) : null;
+            if (data) {
+                const card = createCard(data, false);
+                container.appendChild(card);
+            } else {
+                // Si pas de données, on met juste le symbole
+                const div = document.createElement('div');
+                div.className = 'element-card';
+                div.innerHTML = `<span>${id}</span>`;
+                container.appendChild(div);
+            }
+        }
+
+        // Création de la carte "Manquante" (?)
+        function addMissingCard(container) {
+            const div = document.createElement('div');
+            div.className = 'element-card missing';
+            div.textContent = "?";
+            div.title = "Colonne manquante";
+            container.appendChild(div);
+        }
+
+        // Création d'un espace vide
+        function addGap(container, count = 1) {
+            for(let i=0; i<count; i++) {
+                const div = document.createElement('div');
+                container.appendChild(div);
+            }
+        }
+
+        // --- 2. CONSTRUCTION DE LA GRILLE ---
+        const grid = document.getElementById('grid-container');
+
+        // LIGNE 1: H (1) ... [16 vides] ... ? (18)
+        // Note: Dans ce modèle simplifié, H est à gauche. La colonne manquante est la 18ème (Gaz nobles)
+        // Pour respecter la vue "simplifiée" du fichier original qui montre ~8 colonnes principales:
+        // Le fichier montre: Col 1, 2, ... 7, 8(Inco)
+        // On va reproduire l'aspect visuel du fichier original : Groupes 1,2,13,14,15,16,17 + Inconnu
+        
+        // On change le style de grille pour coller à l'original (8 colonnes affichées)
+        grid.style.gridTemplateColumns = "repeat(8, var(--card-size, 60px))";
+
+        // Ligne 1
+        addCard(grid, "H");
+        addGap(grid, 6);
+        addMissingCard(grid); // He inconnu
+
+        // Ligne 2
+        addCard(grid, "Li"); addCard(grid, "Be");
+        ["B", "C", "N", "O", "F"].forEach(id => addCard(grid, id));
+        addMissingCard(grid); // Ne inconnu
+
+        // Ligne 3
+        addCard(grid, "Na"); addCard(grid, "Mg");
+        ["Al", "Si", "P", "S", "Cl"].forEach(id => addCard(grid, id));
+        addMissingCard(grid); // Ar inconnu
+
+
+        // --- 3. VÉRIFICATION ---
+        function verifierReponse() {
+            const radios = document.getElementsByName('q1');
+            let val = null;
+            for(let r of radios) if(r.checked) val = r.value;
+
+            const msgBox = document.getElementById('message-box');
+            const btnSuite = document.getElementById('btn-suite');
+
+            if (!val) {
+                msgBox.innerHTML = "Veuillez sélectionner une réponse.";
+                msgBox.className = "";
+                return;
+            }
+
+            // Logique du fichier original
+            if (val === 'd') {
+                // Réponse correcte
+                msgBox.innerHTML = "En effet ! Les gaz rares ne réagissent avec aucun autre élément chimique.<br/>Ils passaient donc inaperçus lors de la mise en évidence de nouveaux éléments par des réactions chimiques.";
+                msgBox.className = "msg-success";
+                
+                document.getElementById('btn-verif').disabled = true;
+                btnSuite.style.display = "inline-block";
+                
+                // Désactivation des radios
+                radios.forEach(r => r.disabled = true);
+            } else {
+                // Réponses incorrectes
+                msgBox.className = "msg-error";
+                if (val === 'a') {
+                    msgBox.innerHTML = "Non ! Le nom de gaz rare ne signifie pas qu'ils le sont (on les appelle d'ailleurs d'une autre façon: les \"gaz nobles\").<br/> L'un de ces gaz, l'argon, représente environ 1% de l'atmosphère que nous respirons, ce qui n'est pas négligeable !";
+                }
+                else if (val === 'b') {
+                    msgBox.innerHTML = "Non ! Dans la rigueur qu'il apportait à son travail, Mendeleiev n'avait aucune raison d'ignorer des éléments connus.";
+                }
+                else if (val === 'c') {
+                    msgBox.innerHTML = "Ce n'est pas un argument très rigoureux, sachant que Mendeleiev partait \"de rien\" !";
+                }
+                else if (val === 'e') {
+                    msgBox.innerHTML = "Tous les éléments chimiques présents sur Terre l'étaient déjà à sa création il y a plus de 4 milliards d'années. Mendeleiev n'était même pas né !";
+                }
+            }
+        }
+    </script>
+</body>
+</html>
