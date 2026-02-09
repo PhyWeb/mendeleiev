@@ -193,6 +193,7 @@ h2 { margin: 10px 0; font-size: 1.5rem; }
 
 .msg-success { color: var(--success-color); }
 .msg-error { color: var(--error-color); }
+.msg-warning { color: var(--warning-color);}
 /* --- ORGANISATION DES FAMILLES TROUVÉES --- */
 
 .found-zone {
