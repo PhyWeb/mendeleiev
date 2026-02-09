@@ -226,9 +226,7 @@ function renderMendeleevGrid(container, config = {}) {
     
     const txt = document.createElement('div');
     txt.className = 'transition-text';
-    txt.innerHTML = (config.mode === 'atomic_input') 
-        ? "...<br>6 élém.<br>..." 
-        : "...<br>6 éléments connus non représentés<br>...";
+    txt.innerHTML = "...<br>6 éléments connus non représentés<br>...";
     transDiv.appendChild(txt);
     
     transDiv.appendChild(createCard(elementsData.find(e => e.id === "Cu"), false, { mode: defaultCardMode }));

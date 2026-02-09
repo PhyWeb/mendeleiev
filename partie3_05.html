@@ -23,31 +23,8 @@
             justify-items: center; 
             align-items: center;
         }
-
-        .row-label {
-            font-weight: bold;
-            color: var(--primary-color);
-            padding-right: 15px;
-            font-size: 0.95rem;
-            justify-self: end; /* Aligne le texte à droite */
-        }
-
-        .cards-pool {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            padding: 15px;
-            min-height: 80px;
-            border: 2px dashed #ccc;
-            border-radius: 8px;
-            background-color: rgba(255,255,255,0.5);
-            margin-bottom: 20px;
-        }
-        
-        /* Feedback visuel (géré via game.js) */
-        .cards-pool.drag-over, .slot.drag-over {
-            background-color: rgba(0, 102, 153, 0.1);
-            border-color: var(--primary-color);
+        .card-pool {
+            min-height: 62px;
         }
     </style>
 </head>
@@ -68,7 +45,7 @@
                 </p>
             </div>
 
-            <div class="cards-pool" id="card-pool" 
+            <div class="card-pool" id="card-pool" 
                  ondragover="commonAllowDrop(event); handleDragEnter(event)" 
                  ondragleave="handleDragLeave(event)" 
                  ondrop="handleCardDrop(event)">
