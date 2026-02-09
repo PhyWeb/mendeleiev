@@ -7,28 +7,7 @@
     <link rel="stylesheet" href="style.css">
     <script src="data.js"></script>
     <script src="game.js"></script>
-    <style>
-        /* Définition locale au cas où style.css n'est pas à jour */
-        .grid-missing-col {
-            display: grid;
-            grid-template-columns: repeat(8, 60px);
-            gap: 5px;
-            margin: 20px auto;
-            padding: 15px;
-            background-color: rgba(255, 255, 255, 0.9);
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            width: fit-content;
-        }
 
-        .conclusion-text {
-            text-align: center;
-            font-size: 1.2rem;
-            font-weight: bold;
-            margin-bottom: 20px;
-            color: var(--primary-color);
-        }
-    </style>
 </head>
 <body>
 
@@ -41,10 +20,10 @@
         <section class="game-area">
             
             <div class="question-box conclusion-text">
-                <p>
+                <p style="font-size: 1.1em; font-weight: bold; color: var(--text-color);">
                     Le tableau est désormais complet et son étude dans sa version actuelle parallèlement à la version de Mendeleiev est terminée.
                 </p>
-                <p style="font-size: 1rem; font-weight: normal; margin-top:10px; color: #333;">
+                <p">
                     Vous pouvez retourner à l'accueil du TP et vous consacrer à la quatrième partie (étude des familles chimiques et exercices sur l'utilisation du tableau périodique).
                 </p>
             </div>
